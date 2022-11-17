@@ -1,0 +1,17 @@
+{
+  "name": "truearchetect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "denon run --allow-net --allow-env --allow-read app/server/index.ts",
+    "cbazar": "denon run --allow-net --allow-read --allow-env parsers/cbazar.ts",
+    "jof": "denon run --allow-net --allow-read --allow-env parsers/jofogas.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  }
+}
