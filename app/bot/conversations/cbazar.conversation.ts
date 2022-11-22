@@ -11,11 +11,13 @@ export async function cbazar(conversation: Conversation, ctx: Context) {
 		if (ok) {
 			await ctx.reply("Все правильно ");
 			hui = true;
-      return;
+    
 		} else {
 			await ctx.reply("Введите коректное значение ");
 		}
+
 	}
+  return hui = false;
 }
 
 async function waitForNumber(conversation: Conversation, ctx: Context) {
