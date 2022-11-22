@@ -11,5 +11,9 @@ export interface SessionData {
 		showRegistrationDateF: boolean;
 		showViewsF: boolean;
 		showCountItemsF: boolean;
-		step : "1" | "2" | "3";
+		step: "idle" | "countMaxAds" | "registrationDate" | "publishDate";
+		countMaxAds?: Number;
+		registrationDate?: Number; 
+		publishDate?:Number,
+		
 }

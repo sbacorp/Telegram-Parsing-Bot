@@ -9,19 +9,20 @@ import {
   parseMode,
 } from "https://deno.land/x/grammy_parse_mode@1.5.0/mod.ts";
 import { limit as rateLimit } from "https://deno.land/x/grammy_ratelimiter@v1.1.6/mod.ts";
-import {mainMenu,marketsMenu,settingsMenu,helpMenu,personalAccountMenu,paymentsMenu} from './keyboards/index.ts'
+import {marketsMenu,settingsMenu,helpMenu,personalAccountMenu,paymentsMenu} from './keyboards/index.ts'
 import {settingsHeading,greetings} from './headers.ts'
 import {
-  welcomeFeature,settingsFeature
+  welcomeFeature
 } from "./features/index.ts";
-import {cbazar} from './conversations/index.ts'
+// import {router,getDays} from './conversations/index.ts'
 import {
   setupSession,
 } from "./middlewares/index.ts";
-import {
-	conversations,
-	createConversation,
-} from "https://deno.land/x/grammy_conversations@v1.0.3/mod.ts";
+// import {
+// 	conversations,
+// 	createConversation,
+// } from "https://deno.land/x/grammy_conversations@v1.0.3/mod.ts";
+import { router } from "./router/index.ts";
 
 export const bot = new Bot<Context>(
 	Deno.env.get("BOT_TOKEN")
@@ -34,8 +35,9 @@ bot.api.config.use(parseMode("HTML"));
 bot.use(rateLimit());
 bot.use(hydrateReply);
 bot.use(setupSession());
-bot.use(conversations());
-bot.use(createConversation(cbazar));
+
+// bot.use(conversations());
+// bot.use(createConversation(cbazar));
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
 bot.use(settingsMenu);
@@ -72,7 +74,7 @@ bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
 		}
 	);
 });
-
+bot.use(router);
 bot.catch((err) => console.error(err));
 
 bot.start();

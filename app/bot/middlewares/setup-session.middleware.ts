@@ -28,6 +28,6 @@ export function createInitialSessionData(id: string) {
 		showRegistrationDateF: true,
 		showViewsF: true,
 		showCountItemsF: true,
-		step : "1",
+		sbazarStep: "idle",
 	};
 }
