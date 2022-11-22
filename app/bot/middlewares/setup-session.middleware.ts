@@ -12,7 +12,6 @@ import { freeStorage } from "https://deno.land/x/grammy_storages@v2.0.1/free/src
 export const middleware = (): Middleware<Context> =>
   session({
     initial: createInitialSessionData,
-    storage:freeStorage<SessionData>(Deno.env.get("BOT_TOKEN")),
   });
 	
 export function createInitialSessionData(id: string) {
@@ -29,5 +28,6 @@ export function createInitialSessionData(id: string) {
 		showRegistrationDateF: true,
 		showViewsF: true,
 		showCountItemsF: true,
+		step : "1",
 	};
 }

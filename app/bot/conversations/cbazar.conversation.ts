@@ -1,23 +1,36 @@
 import { Conversation, Context } from "../types/index.ts";
 
-let hui = false;
+
 export async function cbazar(conversation: Conversation, ctx: Context) {
-  await ctx.reply(
-		"<b>🔎 Запуск поиска объявлений</b>\n\n📃 <b>Введите максимально допустимое количество активных объявлений у продавца</b>\n\n Пример : 10",
-		{ parse_mode: "HTML" }
-	);
-	while (!hui) {
+  while (ctx.session.step ==='1') {
+		await ctx.reply(
+			"<b>🔎 Запуск поиска объявлений</b>\n\n📃 <b>Введите максимально допустимое количество активных объявлений у продавца</b>\n\n Пример : 10",
+			{ parse_mode: "HTML" }
+		);
 		const ok = await waitForNumber(conversation, ctx);
 		if (ok) {
 			await ctx.reply("Все правильно ");
-			hui = true;
+			ctx.session.step = "2"
+			console.log(ctx.session.step);
+		} else {
+			await ctx.reply("Введите коректное значение");
+		}
+	}
+	while (ctx.session.step ==='2') {
+		await ctx.reply(
+			"<b>🔎 2 Запуск поиска объявлений</b>\n\n📃 <b>Введите максимально допустимое количество активных объявлений у продавца</b>\n\n Пример : 10",
+			{ parse_mode: "HTML" }
+		);
+		const ok = await waitForNumber(conversation, ctx);
+		if (ok) {
+			await ctx.reply("Все правильно ");
+			ctx.session.step ='3'
     
 		} else {
 			await ctx.reply("Введите коректное значение ");
 		}
-
 	}
-  return hui = false;
+  return ;
 }
 
 async function waitForNumber(conversation: Conversation, ctx: Context) {

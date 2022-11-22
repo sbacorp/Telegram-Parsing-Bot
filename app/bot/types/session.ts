@@ -11,4 +11,5 @@ export interface SessionData {
 		showRegistrationDateF: boolean;
 		showViewsF: boolean;
 		showCountItemsF: boolean;
+		step : "1" | "2" | "3";
 }
