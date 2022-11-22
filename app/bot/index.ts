@@ -1,32 +1,27 @@
 import "https://deno.land/x/dotenv/load.ts";
-import {
-	Bot
-} from "https://deno.land/x/grammy@v1.12.0/mod.ts";
+import { Bot } from "https://deno.land/x/grammy@v1.12.0/mod.ts";
 import { Context } from "./types/index.ts";
 import { apiThrottler } from "https://deno.land/x/grammy_transformer_throttler@v1.2.1/mod.ts";
 import {
-  hydrateReply,
-  parseMode,
+	hydrateReply,
+	parseMode,
 } from "https://deno.land/x/grammy_parse_mode@1.5.0/mod.ts";
 import { limit as rateLimit } from "https://deno.land/x/grammy_ratelimiter@v1.1.6/mod.ts";
-import {marketsMenu,settingsMenu,helpMenu,personalAccountMenu,paymentsMenu} from './keyboards/index.ts'
-import {settingsHeading,greetings} from './headers.ts'
 import {
-  welcomeFeature
-} from "./features/index.ts";
-// import {router,getDays} from './conversations/index.ts'
-import {
-  setupSession,
-} from "./middlewares/index.ts";
-// import {
-// 	conversations,
-// 	createConversation,
-// } from "https://deno.land/x/grammy_conversations@v1.0.3/mod.ts";
+	marketsMenu,
+	settingsMenu,
+	helpMenu,
+	personalAccountMenu,
+	paymentsMenu,
+} from "./keyboards/index.ts";
+import { settingsHeading, greetings } from "./headers.ts";
+import { welcomeFeature } from "./features/index.ts";
+
+import { setupSession } from "./middlewares/index.ts";
+
 import { router } from "./router/index.ts";
 
-export const bot = new Bot<Context>(
-	Deno.env.get("BOT_TOKEN")
-)
+export const bot = new Bot<Context>(Deno.env.get("BOT_TOKEN"));
 
 // Middlewares
 
@@ -36,8 +31,6 @@ bot.use(rateLimit());
 bot.use(hydrateReply);
 bot.use(setupSession());
 
-// bot.use(conversations());
-// bot.use(createConversation(cbazar));
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
 bot.use(settingsMenu);
