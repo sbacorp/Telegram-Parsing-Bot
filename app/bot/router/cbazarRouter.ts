@@ -27,7 +27,7 @@ registrationDate.on("message:text", async (ctx) => {
   }
 
   const registrationDate = parseInt(ctx.msg.text);
-  if (registrationDate >2022 ||registrationDate <2000 ) {
+  if (isNaN(registrationDate) || registrationDate >2022 ||registrationDate <2000 ) {
     await ctx.reply("Неверный год\n повторите попытку");
     return;
   }
@@ -50,7 +50,7 @@ publishDate.on("message:text", async (ctx) => {
   const publishDate = parseInt(ctx.msg.text);
   console.log(publishDate);
   
-  if (publishDate ===2) {
+  if (isNaN(registrationDate) || publishDate ===2) {
     await ctx.reply("Неверная дата\n повторите попытку");
     return;
   }
