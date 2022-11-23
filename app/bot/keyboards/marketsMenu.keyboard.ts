@@ -9,7 +9,6 @@ export const marketsMenu = new Menu("marketsMenuMain")
 		console.log(countMaxAds,registrationDate,publishDate);
 		
 		if (countMaxAds !== undefined && registrationDate !== undefined &&publishDate !==undefined) {
-			// Information already provided!
 			await ctx.reply(`<b>🔎 Фильтры:</b>\n\n\n📃Кол-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`)
 		} else {
 			ctx.session.sbazarStep = "countMaxAds";
@@ -17,6 +16,4 @@ export const marketsMenu = new Menu("marketsMenuMain")
 			ctx.session.sbazarStep = "countMaxAds";
 		}
 	})
-	.text("🇭🇺 jofagos.hu", async (ctx: Context) => {
-		
-	});
+	.text("🇭🇺 jofagos.hu", async (ctx: Context) => {});
