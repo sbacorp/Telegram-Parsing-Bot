@@ -18,7 +18,8 @@ feature.command("start", async (ctx: Context) => {
   ])
 	
 	await ctx.reply(greetings);
-	await ctx.reply("<b>Выберите действие </b>", {
+	await ctx.reply("*Выберите действие*", {
 		reply_markup: mainMenu,
+		
 	});
 });

@@ -14,7 +14,7 @@ import {
 	personalAccountMenu,
 	paymentsMenu,
 } from "./keyboards/index.ts";
-import { settingsHeading, greetings } from "./headers.ts";
+import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
 
 import { setupSession } from "./middlewares/index.ts";
@@ -26,7 +26,7 @@ export const bot = new Bot<Context>(Deno.env.get("BOT_TOKEN"));
 // Middlewares
 
 bot.api.config.use(apiThrottler());
-bot.api.config.use(parseMode("HTML"));
+bot.api.config.use(parseMode("MarkdownV2"));
 bot.use(rateLimit());
 bot.use(hydrateReply);
 bot.use(setupSession());
@@ -53,14 +53,14 @@ bot.hears("📝 Помощь", async (ctx: Context) => {
 });
 
 bot.hears("🔎 Начать поиск", async (ctx: Context) => {
-	await ctx.reply("<b>Выберите площадку : </b>", {
+	await ctx.reply("*Выберите площадку :*", {
 		reply_markup: marketsMenu,
 		disable_web_page_preview: true,
 	});
 });
 bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
 	await ctx.reply(
-		`<b>🔐 Личный кабинет</b>\n\n Баланс : <b>${ctx.session.userBalance}$</b>\n\n <b>Промокод:</b>\n не активирован`,
+		`*🔐 Личный кабинет*\n\n Баланс : *${ctx.session.userBalance}$*\n\n *Промокод:*\n не активирован`,
 		{
 			reply_markup: personalAccountMenu,
 			disable_web_page_preview: true,
