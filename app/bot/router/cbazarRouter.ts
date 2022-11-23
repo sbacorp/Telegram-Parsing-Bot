@@ -58,7 +58,7 @@ publishDate.on("message:text", async (ctx) => {
     return;
   }
   ctx.session.publishDate = publishDate;
-  await ctx.reply(`<b>🔎 Фильтры:</b>\n\n\n📃Кол-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`)
+  await ctx.reply(`*🔎 Фильтры:*\n\n\n📃Кол-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`)
   ctx.session.sbazarStep = "idle";
 });
 router.otherwise(async (ctx) =>  ctx.answerCallbackQuery('Ошибка'));
