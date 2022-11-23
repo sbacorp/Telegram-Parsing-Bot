@@ -1,5 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { Bot } from "https://deno.land/x/grammy@v1.12.0/mod.ts";
+import { run } from "https://deno.land/x/grammy_runner@v1.0.4/mod.ts";
 import { Context } from "./types/index.ts";
 import { apiThrottler } from "https://deno.land/x/grammy_transformer_throttler@v1.2.1/mod.ts";
 import {
@@ -68,6 +69,9 @@ bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
 	);
 });
 bot.use(router);
+bot.on("message:text",  async (ctx) => {
+	 await ctx.reply(`*непонимаю тебя*`);
+	})
 bot.catch((err) => console.error(err));
 
-bot.start();
+run(bot)

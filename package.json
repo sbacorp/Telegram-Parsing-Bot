@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "denon run --allow-net --allow-env --allow-read app/server/index.ts",
+    "start": "denon run --allow-net --allow-env --allow-read app/bot/index.ts",
     "cbazar": "denon run --allow-net --allow-read --allow-env app/server/parsers/cbazar.ts",
     "jof": "denon run --allow-net --allow-read --allow-env parsers/jofogas.ts"
   },

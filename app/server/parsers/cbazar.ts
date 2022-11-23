@@ -3,7 +3,7 @@ import { connection } from "../../supabase.ts";
 /**
  * !consts
  */
-const values = { productsCount: 2, daysAgo: 2, year: 15, count: 10 };
+// const values = { productsCount: 2, daysAgo: 2, year: 15, count: 10 };
 const regex = /[0-9]+/i;
 const urls = [`https://www.sbazar.cz/30-elektro-pocitace`];
 const fetchUserDataURL = "https://www.sbazar.cz/api/v1/users/public?shop_url=";
@@ -84,12 +84,12 @@ const fetchUserDate = async (shop_url) => {
 	} catch (error) {}
 };
 
-const fetchItems = async (urls, count,) => {
+const fetchItems = async (urls, count) => {
 	const fetchingLinks = linksCreator(urls, count);
 	try {
 		for (let index = 0; index < fetchingLinks.length; index++) {
 			const { data } = await axios.get(fetchingLinks[index]);
-			return data.results;	
+			return data.results;
 		}
 	} catch (error) {
 		console.log(error);
@@ -103,7 +103,7 @@ const fetchSearched = async () => {
 };
 // fetchItems(urls, count,items)
 
-const getOutput = async (tmpItems,searchedItems) => {
+const getOutput = async (tmpItems,searchedItems, values,ctx) => {
 let items=[]
 	const array = removeDuplicates(
 		tmpItems
@@ -124,10 +124,10 @@ let items=[]
 			Date.parse(year) / 1000 >=
 				Math.floor(Date.now() / 1000) - 31556926 * values.year
 		) {
-
 			items.push(array[i]);
 			searchedItems.push(array[i].user.id)
 			await addShop(array[i].user.id);
+			await  ctx.reply(array[i].user.id)
 		}
 	}
 
@@ -136,7 +136,7 @@ let items=[]
 
 
 
-const parse = async () => {
+export const parse = async (ctx, values) => {
 	let searchedItems = [];
 	let items = [];
 	let tmpItems = [];
@@ -144,16 +144,10 @@ const parse = async () => {
 	searchedItems = await fetchSearched();
 	while (items.length < Number(values.count)) {
 	// console.log(searchedItems, 'searchedItems');
-		tmpItems = await fetchItems(urls, count);
-
-		console.log(tmpItems.length , 'qweqweqwe');
-		
-		items = items.concat(await getOutput(tmpItems,searchedItems));
+		tmpItems = await fetchItems(urls, count);	
+		items = items.concat(await getOutput(tmpItems,searchedItems,values, ctx));
 		console.log(items.length);
-		
 		count += 1;
-
-		
 	}
 
 };
