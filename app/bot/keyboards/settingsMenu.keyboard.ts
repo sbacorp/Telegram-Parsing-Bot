@@ -7,15 +7,8 @@ export const settingsMenu = new Menu("mainSettingsMenu")
 	})
 	.row()
 	.text(
-		(ctx: Context) => (ctx.session.showPhoto === true ? "✅ Фото" : "❌ Фото"),
-		(ctx: Context) => {
-			ctx.session.showPhoto = !ctx.session.showPhoto;
-			ctx.menu.update();
-		}
-	)
-	.text(
 		(ctx: Context) =>
-			ctx.session.showOwnerName === true ? "✅ Имя" : "❌ Имя",
+			ctx.session.showOwnerName === true ? "✅ Продавец" : "❌ Продавец",
 		(ctx: Context) => {
 			ctx.session.showOwnerName = !ctx.session.showOwnerName;
 			ctx.menu.update();
@@ -29,22 +22,6 @@ export const settingsMenu = new Menu("mainSettingsMenu")
 		}
 	)
 	.row()
-	.text(
-		(ctx: Context) =>
-			ctx.session.showLocation === true ? "✅ Локация" : "❌ Локация",
-		(ctx: Context) => {
-			ctx.session.showLocation = !ctx.session.showLocation;
-			ctx.menu.update();
-		}
-	)
-	.text(
-		(ctx: Context) =>
-			ctx.session.showDesc === true ? "✅ Описание" : "❌ Описание",
-		(ctx: Context) => {
-			ctx.session.showDesc = !ctx.session.showDesc;
-			ctx.menu.update();
-		}
-	)
 	.text(
 		(ctx: Context) =>
 			ctx.session.showTitle === true ? "✅ Название" : "❌ Название",

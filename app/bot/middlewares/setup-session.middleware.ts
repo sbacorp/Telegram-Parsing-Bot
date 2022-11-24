@@ -18,11 +18,8 @@ export function createInitialSessionData(id: string) {
 	return {
 		userId: id,
 		userBalance: 5,
-		showPhoto: true,
 		showOwnerName: true,
 		showPrice: true,
-		showLocation: true,
-		showDesc: true,
 		showTitle: true,
 		onlyWithPhone:false,
 		onlyWithWA:false,
