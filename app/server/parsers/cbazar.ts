@@ -169,7 +169,6 @@ export const parse = async (ctx, values) => {
 	await ctx.reply("Поиск завершен")
 };
 
-console.log("server launched");
 async function doPostRequest(phone) {
 	let payload = { phoneNumber: phone };
 	let res = await axios.post(

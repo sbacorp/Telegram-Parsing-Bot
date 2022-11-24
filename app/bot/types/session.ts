@@ -11,4 +11,5 @@ export interface SessionData {
 	countMaxAds?: Number;
 	registrationDate?: Number;
 	publishDate?: Number;
+	
 }

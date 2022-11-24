@@ -25,6 +25,7 @@ export const marketsMenu = new Menu("marketsMenuMain")
 				);
 				ctx.session.sbazarStep = "countMaxAds";
 			}
+			
 		}
 	)
 	.text("🇭🇺 jofagos.hu", async (ctx: Context) => {});
