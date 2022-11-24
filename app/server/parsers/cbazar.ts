@@ -122,13 +122,12 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			items.push(array[i]);
 			searchedItems.push(array[i].user.id);
 			await addShop(array[i].user.id);
-			await ctx.reply("🔍")
 			await ctx.replyWithPhoto(
 				`http:${array[i].images[0].url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
 				{
 					caption: `✍️ Название :<code>${array[i].name}</code>\n
-					${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč`}
-					\n👨 Продавец: <code>${
+					${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč\n`}
+					👨 Продавец: <code>${
 						array[i].user.user_service.shop_url
 					}</code>\n<a href=\"https://www.sbazar.cz/${
 						array[i].user.user_service.shop_url
@@ -154,6 +153,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 };
 
 export const parse = async (ctx, values) => {
+	await ctx.reply("🔍")
 	let searchedItems = [];
 	let items = [];
 	let tmpItems = [];
