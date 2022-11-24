@@ -1,6 +1,6 @@
 import { Router } from "https://deno.land/x/grammy_router@v2.0.0/router.ts";
 import { parse } from "../../server/parsers/cbazar.ts";
-import { cancel } from "../keyboards/index.ts";
+import { cancel,mainMenu } from "../keyboards/index.ts";
 import { Context } from "../types/index.ts";
 
 export const router = new Router<Context>((ctx) => ctx.session.sbazarStep);
@@ -88,6 +88,7 @@ publishDate.on("message:text", async (ctx) => {
         ctx.session.sbazarStep = "registrationDate";
         return;
 	}
+	
 
 	const publishDate = parseInt(ctx.msg.text);
 	if (isNaN(publishDate) || publishDate < 1) {
@@ -96,8 +97,9 @@ publishDate.on("message:text", async (ctx) => {
 	}
 	ctx.session.publishDate = publishDate;
 	await ctx.reply(
-		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}`
+		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}`,{ reply_markup: cancel }
 	);
+	
 	const values = { productsCount: Number(ctx.session.countMaxAds), daysAgo: Number(ctx.session.publishDate), year: 2022-Number(ctx.session.registrationDate), count: ctx.session.countOutput};
 	await parse(ctx, values);
 	ctx.session.sbazarStep = "idle";

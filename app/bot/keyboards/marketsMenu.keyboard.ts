@@ -1,7 +1,7 @@
 import { Menu } from "https://deno.land/x/grammy_menu@v1.1.2/mod.ts";
 import { Context } from "../types/index.ts";
 import { cancel } from "../keyboards/index.ts";
-export const marketsMenu = new Menu("marketsMenuMain")
+export const marketsMenu = new Menu("marketsMenu")
 	.text(
 		"🇨🇿 sbazar.cz",
 
@@ -25,7 +25,7 @@ export const marketsMenu = new Menu("marketsMenuMain")
 					"*🔎 Запуск поиска объявлений*\n\n📃 *Введите максимально допустимое количество активных объявлений у продавца*\n\n Пример : 10",
 					{ reply_markup: cancel} 
 				);
-				await ctx.reply({reply_markup: marketsMenu});
+				await ctx.reply({reply_markup: marketsMenu})
 				ctx.session.sbazarStep = "countMaxAds";
 			}
 			

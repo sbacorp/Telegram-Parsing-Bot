@@ -123,7 +123,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			searchedItems.push(array[i].user.id);
 			await addShop(array[i].user.id);
 			await ctx.replyWithPhoto(
-				`http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
+			`${array[i].images[0]?.url===''?'https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png':`http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`}`,
 				{
 				caption: `${!ctx.session.showTitle?'':`✍️ Название :<code>${array[i].name}</code>\n`}
 				${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč\n`}
@@ -154,14 +154,22 @@ export const parse = async (ctx, values) => {
 	let items = [];
 	let tmpItems = [];
 	let count = 0;
+
+	
 	
 	while (items.length < Number(values.count)) {
 		searchedItems = await fetchSearched();
 		tmpItems = await fetchItems(urls, count);
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
-		
 		count += 1;
+		
 	}
+	if (ctx.msg.text==='отмена'){
+		await ctx.reply("Парсинг отменен")
+		ctx.session.sbazarStep = "idle";
+		return;
+	}
+
 	await ctx.reply("Поиск завершен")
 };
 
