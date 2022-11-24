@@ -5,7 +5,7 @@ import { Context } from "./types/index.ts";
 import { apiThrottler } from "https://deno.land/x/grammy_transformer_throttler@v1.2.1/mod.ts";
 import {
 	hydrateReply,
-	parseMode
+	parseMode,
 } from "https://deno.land/x/grammy_parse_mode@1.5.0/mod.ts";
 import { limit as rateLimit } from "https://deno.land/x/grammy_ratelimiter@v1.1.6/mod.ts";
 import {
@@ -14,6 +14,7 @@ import {
 	helpMenu,
 	personalAccountMenu,
 	paymentsMenu,
+	countOutputMenu,
 } from "./keyboards/index.ts";
 import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
@@ -31,13 +32,13 @@ bot.api.config.use(parseMode("MarkdownV2"));
 bot.use(rateLimit());
 bot.use(hydrateReply);
 bot.use(setupSession());
-
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
 bot.use(settingsMenu);
 bot.use(personalAccountMenu);
+bot.use(countOutputMenu);
 personalAccountMenu.register(paymentsMenu);
-
+settingsMenu.register(countOutputMenu);
 //handlers
 bot.use(welcomeFeature);
 bot.hears("⚙️ Настройки", async (ctx: Context) => {
@@ -69,9 +70,9 @@ bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
 	);
 });
 bot.use(router);
-bot.on("message:text",  async (ctx) => {
-	 await ctx.reply(`*непонимаю тебя*`);
-	})
+bot.on("message:text", async (ctx) => {
+	await ctx.reply(`*непонимаю тебя*`);
+});
 bot.catch((err) => console.error(err));
 
-run(bot)
+run(bot);

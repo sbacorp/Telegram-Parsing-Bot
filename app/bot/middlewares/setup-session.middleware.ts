@@ -24,10 +24,9 @@ export function createInitialSessionData(id: string) {
 		showLocation: true,
 		showDesc: true,
 		showTitle: true,
-		showPublishTimeF: true,
-		showRegistrationDateF: true,
-		showViewsF: true,
-		showCountItemsF: true,
+		onlyWithPhone:false,
+		onlyWithWA:false,
+		countOutput:5,
 		sbazarStep: "idle",
 	};
 }

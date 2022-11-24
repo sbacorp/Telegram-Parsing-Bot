@@ -7,13 +7,11 @@ export interface SessionData {
 		showLocation: boolean;
 		showDesc: boolean;
 		showTitle: boolean;
-		showPublishTimeF: boolean;
-		showRegistrationDateF: boolean;
-		showViewsF: boolean;
-		showCountItemsF: boolean;
+		onlyWithPhone:boolean;
+		onlyWithWA:boolean;
+		countOutput:Number;
 		step: "idle" | "countMaxAds" | "registrationDate" | "publishDate";
 		countMaxAds?: Number;
 		registrationDate?: Number; 
-		publishDate?:Number,
-		
+		publishDate?:Number;
 }

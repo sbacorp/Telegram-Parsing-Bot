@@ -122,6 +122,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			items.push(array[i]);
 			searchedItems.push(array[i].user.id);
 			await addShop(array[i].user.id);
+			await ctx.reply("🔍")
 			await ctx.replyWithPhoto(
 				`http:${array[i].images[0].url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
 				{
