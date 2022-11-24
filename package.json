@@ -13,5 +13,8 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12"
   }
 }

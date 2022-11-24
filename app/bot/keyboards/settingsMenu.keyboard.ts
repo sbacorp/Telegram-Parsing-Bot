@@ -57,52 +57,52 @@ export const settingsMenu = new Menu("mainSettingsMenu")
 		}
 	)
 	.row()
-	.text("🔽 Отображене фильтров", (ctx: Context) => {
-		ctx.answerCallbackQuery("⚠️ Неактивная кнопка⚠️");
-	})
-	.row()
-	.text(
-		(ctx: Context) =>
-			ctx.session.showPublishTimeF === true
-				? "✅ Дата публикации"
-				: "❌ Дата публикации",
-		(ctx: Context) => {
-			ctx.session.showPublishTimeF = !ctx.session.showPublishTimeF;
-			ctx.menu.update();
-		}
-	)
-	.text(
-		(ctx: Context) =>
-			ctx.session.showRegistrationDateF === true
-				? "✅ Дата регистрации"
-				: "❌ Дата регистрации",
-		(ctx: Context) => {
-			ctx.session.showRegistrationDateF = !ctx.session.showRegistrationDateF;
-			ctx.menu.update();
-		}
-	)
-	.row()
-	.text(
-		(ctx: Context) =>
-			ctx.session.showViewsF === true
-				? "✅ Кол-во просмотров"
-				: "❌ Кол-во просмотров",
-		(ctx: Context) => {
-			ctx.session.showViewsF = !ctx.session.showViewsF;
-			ctx.menu.update();
-		}
-	)
-	.text(
-		(ctx: Context) =>
-			ctx.session.showCountItemsF === true
-				? "✅ Кол-во объявлений"
-				: "❌ Кол-во объявлений",
-		(ctx: Context) => {
-			ctx.session.showCountItemsF = !ctx.session.filters.showCountItemsF;
-			ctx.menu.update();
-		}
-	)
-	.row()
+	// .text("🔽 Отображене фильтров", (ctx: Context) => {
+	// 	ctx.answerCallbackQuery("⚠️ Неактивная кнопка⚠️");
+	// })
+	// .row()
+	// .text(
+	// 	(ctx: Context) =>
+	// 		ctx.session.showPublishTimeF === true
+	// 			? "✅ Дата публикации"
+	// 			: "❌ Дата публикации",
+	// 	(ctx: Context) => {
+	// 		ctx.session.showPublishTimeF = !ctx.session.showPublishTimeF;
+	// 		ctx.menu.update();
+	// 	}
+	// )
+	// .text(
+	// 	(ctx: Context) =>
+	// 		ctx.session.showRegistrationDateF === true
+	// 			? "✅ Дата регистрации"
+	// 			: "❌ Дата регистрации",
+	// 	(ctx: Context) => {
+	// 		ctx.session.showRegistrationDateF = !ctx.session.showRegistrationDateF;
+	// 		ctx.menu.update();
+	// 	}
+	// )
+	// .row()
+	// .text(
+	// 	(ctx: Context) =>
+	// 		ctx.session.showViewsF === true
+	// 			? "✅ Кол-во просмотров"
+	// 			: "❌ Кол-во просмотров",
+	// 	(ctx: Context) => {
+	// 		ctx.session.showViewsF = !ctx.session.showViewsF;
+	// 		ctx.menu.update();
+	// 	}
+	// )
+	// .text(
+	// 	(ctx: Context) =>
+	// 		ctx.session.showCountItemsF === true
+	// 			? "✅ Кол-во объявлений"
+	// 			: "❌ Кол-во объявлений",
+	// 	(ctx: Context) => {
+	// 		ctx.session.showCountItemsF = !ctx.session.filters.showCountItemsF;
+	// 		ctx.menu.update();
+	// 	}
+	// )
+	// .row()
 	.text("🔽  Модификации", (ctx: Context) => {
 		ctx.answerCallbackQuery("⚠️ Неактивная кнопка⚠️");
 	})

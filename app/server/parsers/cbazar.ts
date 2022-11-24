@@ -1,10 +1,11 @@
 import axios from "npm:axios";
 import { connection } from "../../supabase.ts";
+import cheerio from "npm:cheerio";
 /**
  * !consts
  */
 // const values = { productsCount: 2, daysAgo: 2, year: 15, count: 10 };
-const regex = /[0-9]+/i;
+const regex = /[0-9]+/;
 const urls = [`https://www.sbazar.cz/30-elektro-pocitace`];
 const fetchUserDataURL = "https://www.sbazar.cz/api/v1/users/public?shop_url=";
 /*
@@ -18,31 +19,6 @@ function removeDuplicates(arr: any[]) {
 	return arr;
 }
 
-// const parse = async (url:string) => {
-// 	try {
-// 		const ads:any = [];
-// 		for (let index = 1; index < 5; index++) {
-// 		const res = await fetch(`${url}/cela-cr/cena-neomezena/nejnovejsi/${index}`);
-// 		const html = await res.text();
-// 		const $1 = cheerio.load(html);
-// 		const linkObjects = $1("a.c-item__link")
-// 		linkObjects.each(async(index:Number, element:HTMLElement) => {
-//       const res = await fetch($1(element).attr('href'));
-// 			const html = await res.text();
-// 			const $ = cheerio.load(html);
-// 			ads.push({
-// 				link:$1(element).attr('href'),
-// 				title: $("h1.p-uw-item__header").text(),
-// 				price:$("b.c-price__price").text(),
-// 				phone:$("a.c-seller-card__contact-phone").text()
-// 			})
-// 			});
-// 		}
-// 		console.log(ads)
-// 	} catch (error) {
-// 		console.log(error);
-// 	}
-// };
 const linksCreator = (urls: string[], count) => {
 	const reconstructedLinks = [];
 	for (let index = 0; index < urls.length; index++) {
@@ -98,13 +74,29 @@ const fetchItems = async (urls, count) => {
 
 const fetchSearched = async () => {
 	let { data: shopIds } = await connection.from("shpIds").select("shopId");
-	const searchedItems = shopIds.map((obj) => obj.shopId)
+	const searchedItems = shopIds.map((obj) => obj.shopId);
 	return searchedItems;
 };
 // fetchItems(urls, count,items)
+const parsePhone = async (url: string) => {
+	const res = await fetch(url);
+	const html = await res.text();
+	const $ = cheerio.load(html);
+	const number = $("a.c-seller-card__contact-phone").text().replace(/ /g, "");
+	console.log(number, "number");
 
-const getOutput = async (tmpItems,searchedItems, values,ctx) => {
-let items=[]
+	if (number === "") {
+		return null;
+	} else {
+		const phone = { wa: Boolean(await doPostRequest(number)), number: number };
+		console.log(phone, "phone");
+
+		return phone;
+	}
+};
+
+const getOutput = async (tmpItems, searchedItems, values, ctx) => {
+	let items = [];
 	const array = removeDuplicates(
 		tmpItems
 			.filter((obj) => {
@@ -117,6 +109,9 @@ let items=[]
 			.filter((obj) => !searchedItems.includes(obj?.user?.id))
 	);
 	for (let i = 0; i < array.length; i++) {
+		const phone = await parsePhone(
+			`https://www.sbazar.cz/${array[i].user.user_service.shop_url}/detail/${array[i].seo_name}`
+		);
 		let count = await countUserItems(array[i].user.id);
 		let year = await fetchUserDate(array[i].user.user_service.shop_url);
 		if (
@@ -125,16 +120,37 @@ let items=[]
 				Math.floor(Date.now() / 1000) - 31556926 * values.year
 		) {
 			items.push(array[i]);
-			searchedItems.push(array[i].user.id)
+			searchedItems.push(array[i].user.id);
 			await addShop(array[i].user.id);
-			await  ctx.reply(array[i].user.id)
+			await ctx.replyWithPhoto(
+				`http:${array[i].images[0].url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
+				{
+					caption: `✍️ Название :<code>${array[i].name}</code>\n💵Цена :${
+						array[i].price
+					} Kč\n👨 Продавец: <code>${
+						array[i].user.user_service.shop_url
+					}</code>\n<a href=\"https://www.sbazar.cz/${
+						array[i].user.user_service.shop_url
+					}/detail/${
+						array[i].seo_name
+					}\">📌Ссылка на обьявление</a>\n\n📞️ Номер:<code>${
+						phone?.number ? phone.number : "номера нет"
+					}</code>\n\nПерейти в WhatsApp:${
+						phone?.wa
+							? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+							: "нет"
+					}\n\nКоличество товаров :${count}\n📅Дата публикации: ${
+						array[i].create_date
+					}\n📅 Дата регистрации: ${year}`,
+					disable_web_page_preview: true,
+					parse_mode: "HTML",
+				}
+			);
 		}
 	}
 
 	return items;
 };
-
-
 
 export const parse = async (ctx, values) => {
 	let searchedItems = [];
@@ -143,15 +159,21 @@ export const parse = async (ctx, values) => {
 	let count = 0;
 	searchedItems = await fetchSearched();
 	while (items.length < Number(values.count)) {
-	// console.log(searchedItems, 'searchedItems');
-		tmpItems = await fetchItems(urls, count);	
-		items = items.concat(await getOutput(tmpItems,searchedItems,values, ctx));
+		// console.log(searchedItems, 'searchedItems');
+		tmpItems = await fetchItems(urls, count);
+		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
 		console.log(items.length);
 		count += 1;
 	}
-
 };
-// parse();
-// fetchItems(urls);
 
 console.log("server launched");
+async function doPostRequest(phone) {
+	let payload = { phoneNumber: phone };
+	let res = await axios.post(
+		"https://api.green-api.com/waInstance1101773704/checkWhatsapp/bdf8a829ed094ee5a294ae11e3bcfd80aaaf2f2e2118491bba",
+		payload
+	);
+	let data = res.data;
+	return data.existsWhatsapp;
+}

@@ -16,7 +16,7 @@ export const marketsMenu = new Menu("marketsMenuMain")
 				publishDate !== undefined
 			) {
 				await ctx.reply(
-					`*🔎 Фильтры:*\n\n\n📃Кол-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`
+					`*🔎 Фильтры:*\n\n\n📃Кол\-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`
 				);
 			} else {
 				ctx.session.sbazarStep = "countMaxAds";

@@ -5,7 +5,7 @@ import { Context } from "./types/index.ts";
 import { apiThrottler } from "https://deno.land/x/grammy_transformer_throttler@v1.2.1/mod.ts";
 import {
 	hydrateReply,
-	parseMode,
+	parseMode
 } from "https://deno.land/x/grammy_parse_mode@1.5.0/mod.ts";
 import { limit as rateLimit } from "https://deno.land/x/grammy_ratelimiter@v1.1.6/mod.ts";
 import {
@@ -41,13 +41,13 @@ personalAccountMenu.register(paymentsMenu);
 //handlers
 bot.use(welcomeFeature);
 bot.hears("⚙️ Настройки", async (ctx: Context) => {
-	await ctx.reply(settingsHeading, {
+	await ctx.replyWithHTML(settingsHeading, {
 		reply_markup: settingsMenu,
 		disable_web_page_preview: true,
 	});
 });
 bot.hears("📝 Помощь", async (ctx: Context) => {
-	await ctx.reply("<b>Надеемся, мы вам поможем!</b>", {
+	await ctx.reply("*Надеемся, мы вам поможем*", {
 		reply_markup: helpMenu,
 		disable_web_page_preview: true,
 	});
