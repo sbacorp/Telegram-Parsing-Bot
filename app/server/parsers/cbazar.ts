@@ -1,6 +1,6 @@
-import axios from "https://esm.sh/axios";
+import axios from "npm:axios";
 import { connection } from "../../supabase.ts";
-import cheerio from "https://esm.sh/cheerio";
+import cheerio from "npm:cheerio";
 /**
  * !consts
  */
