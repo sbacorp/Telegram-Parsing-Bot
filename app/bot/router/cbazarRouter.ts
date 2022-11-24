@@ -7,6 +7,9 @@ export const router = new Router<Context>((ctx) => ctx.session.sbazarStep);
 
 const countMaxAds = router.route("countMaxAds");
 countMaxAds.on("message:text", async (ctx) => {
+	/**
+	 * !первая омтена 
+	 */
   if (ctx.msg.text==='отмена') {
     await ctx.reply(`Действие отменено`);
     ctx.session.sbazarStep = "idle";
@@ -21,20 +24,31 @@ countMaxAds.on("message:text", async (ctx) => {
 	
 	await ctx.reply("*Готово*");
 	await ctx.reply(
-		"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату регистрации продавца*\n\n Пример : 2020"
+		"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату регистрации продавца*\n\n Пример : 2020",
+		{ reply_markup: cancel }
 	);
 	ctx.session.sbazarStep = "registrationDate";
 });
 
-countMaxAds.use(async (ctx) => await ctx.reply({ reply_markup: cancel }));
-const registrationDate = router.route("registrationDate");
+ countMaxAds.use(async (ctx) => await ctx.reply({ reply_markup: cancel }));
 
+const registrationDate = router.route("registrationDate");
 registrationDate.on("message:text", async (ctx) => {
 	const countMaxAds = ctx.session.countMaxAds;
 	if (countMaxAds === undefined) {
 		await ctx.reply("предыдущий фильтр не определен");
 		ctx.session.sbazarStep = "countMaxAds";
 		return;
+    }
+/**
+ * !втоаря омтена 
+ */
+	if(ctx.msg.text==='отмена'){
+		await ctx.reply(`Действие отменено`);
+		await ctx.reply(
+			"*🔎 Запуск поиска объявлений*\n\n📃 *Введите максимально допустимое количество активных объявлений у продавца*\n\n Пример : 10");
+        ctx.session.sbazarStep = "countMaxAds";
+        return;
 	}
 
 	const registrationDate = parseInt(ctx.msg.text);
@@ -46,16 +60,17 @@ registrationDate.on("message:text", async (ctx) => {
 		await ctx.reply("Неверный год\n повторите попытку");
 		return;
 	}
+	
 	ctx.session.registrationDate = registrationDate;
 	await ctx.reply("Готово");
 	await ctx.reply(
-		"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату публикации товара `дней назад`*\n\n Пример : 3" 
+		"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату публикации товара `дней назад`*\n\n Пример : 3",
+		{ reply_markup: cancel }	 
 	);
 	ctx.session.sbazarStep = "publishDate";
 });
 
 const publishDate = router.route("publishDate");
-
 publishDate.on("message:text", async (ctx) => {
 	const registrationDate = ctx.session.registrationDate;
 	if (registrationDate === undefined) {
@@ -63,6 +78,17 @@ publishDate.on("message:text", async (ctx) => {
 		ctx.session.sbazarStep = "registrationDate";
 		return;
 	}
+	/**
+    * !третья омтена 
+    */
+	 if ( ctx.msg.text ==='отмена'){
+		await ctx.reply(`Действие отменено`);
+		await ctx.reply(
+			"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату регистрации продавца*\n\n Пример : 2020");
+        ctx.session.sbazarStep = "registrationDate";
+        return;
+	}
+
 	const publishDate = parseInt(ctx.msg.text);
 	if (isNaN(publishDate) || publishDate < 1) {
 		await ctx.reply("*Неверно, повторите попытку\!*");

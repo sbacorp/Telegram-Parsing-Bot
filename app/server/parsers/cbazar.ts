@@ -123,7 +123,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			searchedItems.push(array[i].user.id);
 			await addShop(array[i].user.id);
 			await ctx.replyWithPhoto(
-				`http:${array[i].images[0].url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
+				`http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
 				{
 				caption: `${!ctx.session.showTitle?'':`✍️ Название :<code>${array[i].name}</code>\n`}
 				${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč\n`}
@@ -132,9 +132,9 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 				${array[i].user.user_service.shop_url}/detail/
 				${array[i].seo_name}\">📌Ссылка на обьявление</a>\n
 				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>\n
-				Перейти в WhatsApp:${phone?.wa
+				Перейти в WhatsApp : ${phone?.wa
 						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "нет"}\n
+						: "WA нет"}\n
 				Количество товаров :${count}\n
 				📅Дата публикации: ${array[i].create_date}\n
 				📅 Дата регистрации: ${year}`,
