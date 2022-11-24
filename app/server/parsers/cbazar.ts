@@ -83,13 +83,13 @@ const parsePhone = async (url: string) => {
 	const html = await res.text();
 	const $ = cheerio.load(html);
 	const number = $("a.c-seller-card__contact-phone").text().replace(/ /g, "");
-	console.log(number, "number");
+	
 
 	if (number === "") {
 		return null;
 	} else {
 		const phone = { wa: Boolean(await doPostRequest(number)), number: number };
-		console.log(phone, "phone");
+
 
 		return phone;
 	}
@@ -127,10 +127,9 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 				{
 					caption: `✍️ Название :<code>${array[i].name}</code>\n
 					${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč\n`}
-					👨 Продавец: <code>${
-						array[i].user.user_service.shop_url
-					}</code>\n<a href=\"https://www.sbazar.cz/${
-						array[i].user.user_service.shop_url
+					👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>\n
+					<a href=\"https://www.sbazar.cz/
+					${array[i].user.user_service.shop_url
 					}/detail/${
 						array[i].seo_name
 					}\">📌Ссылка на обьявление</a>\n\n📞️ Номер:<code>${
@@ -163,7 +162,7 @@ export const parse = async (ctx, values) => {
 		searchedItems = await fetchSearched();
 		tmpItems = await fetchItems(urls, count);
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
-		console.log(items.length);
+		
 		count += 1;
 	}
 	await ctx.reply("Поиск завершен")

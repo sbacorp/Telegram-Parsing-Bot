@@ -8,7 +8,7 @@ export const marketsMenu = new Menu("marketsMenuMain")
 			const countMaxAds = ctx.session?.countMaxAds;
 			const registrationDate = ctx.session?.registrationDate;
 			const publishDate = ctx.session?.publishDate;
-			console.log(countMaxAds, registrationDate, publishDate);
+		
 
 			if (
 				countMaxAds !== undefined &&
