@@ -158,14 +158,15 @@ export const parse = async (ctx, values) => {
 	let items = [];
 	let tmpItems = [];
 	let count = 0;
-	searchedItems = await fetchSearched();
+	
 	while (items.length < Number(values.count)) {
-		// console.log(searchedItems, 'searchedItems');
+		searchedItems = await fetchSearched();
 		tmpItems = await fetchItems(urls, count);
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
 		console.log(items.length);
 		count += 1;
 	}
+	await ctx.reply("Поиск завершен")
 };
 
 console.log("server launched");
