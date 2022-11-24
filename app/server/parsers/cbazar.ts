@@ -125,22 +125,19 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			await ctx.replyWithPhoto(
 				`http:${array[i].images[0].url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`,
 				{
-					caption: `✍️ Название :<code>${array[i].name}</code>\n
+					caption: `${!ctx.session.showTitle?'':`✍️ Название :<code>${array[i].name}</code>\n`}
 					${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč\n`}
-					👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>\n
+					${!ctx.session.showOwnerName?'':`👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>\n`}
 					<a href=\"https://www.sbazar.cz/
-					${array[i].user.user_service.shop_url
-					}/detail/${
-						array[i].seo_name
-					}\">📌Ссылка на обьявление</a>\n\n📞️ Номер:<code>${
-						phone?.number ? phone.number : "номера нет"
-					}</code>\n\nПерейти в WhatsApp:${
-						phone?.wa
+					${array[i].user.user_service.shop_url}/detail/
+					${array[i].seo_name}\">📌Ссылка на обьявление</a>\n\n
+					📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>\n\n
+					Перейти в WhatsApp:${phone?.wa
 							? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-							: "нет"
-					}\n\nКоличество товаров :${count}\n📅Дата публикации: ${
-						array[i].create_date
-					}\n📅 Дата регистрации: ${year}`,
+							: "нет"}\n\n
+					Количество товаров :${count}\n
+					📅Дата публикации: ${array[i].create_date}\n
+					📅 Дата регистрации: ${year}`,
 					disable_web_page_preview: true,
 					parse_mode: "HTML",
 				}
