@@ -17,7 +17,7 @@ export const middleware = (): Middleware<Context> =>
 export function createInitialSessionData(id: string) {
 	return {
 		userId: id,
-		userBalance: 1, // менял для проверки потом убери или поменять надо на переменную 
+		userBalance: 0, // менял для проверки потом убери или поменять надо на переменную 
 		showOwnerName: true,
 		showPrice: true,
 		showTitle: true,

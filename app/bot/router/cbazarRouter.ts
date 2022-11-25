@@ -12,7 +12,7 @@ countMaxAds.on("message:text", async (ctx) => {
 	 */
   if (ctx.msg.text==='отмена') {
     await ctx.reply(`Действие отменено`);
-	await ctx.reply({reply_markup:mainMenu }) // скорее всего не работает потмоу что потом  на idle меняем 
+	await ctx.reply(" Выберите действие ",{reply_markup:mainMenu });  
 	ctx.session.sbazarStep = "idle";
     return;
   }

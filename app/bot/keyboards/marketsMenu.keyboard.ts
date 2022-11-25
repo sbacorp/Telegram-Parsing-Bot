@@ -1,9 +1,9 @@
 import { Menu } from "https://deno.land/x/grammy_menu@v1.1.2/mod.ts";
 import { Context } from "../types/index.ts";
-import { cancel } from "../keyboards/index.ts";
-import { personalAccountMenu } from "../keyboards/index.ts";
+import { cancel,personalAccountMenu } from "../keyboards/index.ts";
 
 export const marketsMenu = new Menu("marketsMenu")
+
 
 
 	.text(
@@ -14,11 +14,13 @@ export const marketsMenu = new Menu("marketsMenu")
 			const registrationDate = ctx.session?.registrationDate;
 			const publishDate = ctx.session?.publishDate;
 
-			if (ctx.session.userBalance == 0 || ctx.session.userBalance < 0){
-				await ctx.reply("Недостаточно средств, пополните баланс");
-				// await ctx.reply( { reply_markup: personalAccountMenu });
+			
+            if (ctx.session.userBalance == 0 || ctx.session.userBalance < 0){
+				await ctx.reply('Недостаточно средств');
+				await ctx.reply("Пополните баланс", { reply_markup: personalAccountMenu });
 				return;
-			}
+			};
+			
 
 			  if (
 				countMaxAds !== undefined &&
