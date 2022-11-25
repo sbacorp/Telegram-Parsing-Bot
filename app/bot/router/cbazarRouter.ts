@@ -12,7 +12,8 @@ countMaxAds.on("message:text", async (ctx) => {
 	 */
   if (ctx.msg.text==='отмена') {
     await ctx.reply(`Действие отменено`);
-    ctx.session.sbazarStep = "idle";
+	await ctx.reply({reply_markup:mainMenu }) // скорее всего не работает потмоу что потом  на idle меняем 
+	ctx.session.sbazarStep = "idle";
     return;
   }
 	const countMaxAds = parseInt(ctx.msg.text);

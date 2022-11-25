@@ -1,7 +1,11 @@
 import { Menu } from "https://deno.land/x/grammy_menu@v1.1.2/mod.ts";
 import { Context } from "../types/index.ts";
 import { cancel } from "../keyboards/index.ts";
+import { personalAccountMenu } from "../keyboards/index.ts";
+
 export const marketsMenu = new Menu("marketsMenu")
+
+
 	.text(
 		"🇨🇿 sbazar.cz",
 
@@ -9,12 +13,18 @@ export const marketsMenu = new Menu("marketsMenu")
 			const countMaxAds = ctx.session?.countMaxAds;
 			const registrationDate = ctx.session?.registrationDate;
 			const publishDate = ctx.session?.publishDate;
-		
 
-			if (
+			if (ctx.session.userBalance == 0 || ctx.session.userBalance < 0){
+				await ctx.reply("Недостаточно средств, пополните баланс");
+				// await ctx.reply( { reply_markup: personalAccountMenu });
+				return;
+			}
+
+			  if (
 				countMaxAds !== undefined &&
 				registrationDate !== undefined &&
 				publishDate !== undefined
+
 			) {
 				await ctx.reply(
 					`*🔎 Фильтры:*\n\n\n📃Кол\-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`
