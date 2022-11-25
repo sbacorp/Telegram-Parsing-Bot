@@ -35,6 +35,7 @@ bot.use(setupSession());
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
 bot.use(settingsMenu);
+
 bot.use(personalAccountMenu);
 bot.use(countOutputMenu);
 personalAccountMenu.register(paymentsMenu);
