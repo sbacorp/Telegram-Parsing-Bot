@@ -15,6 +15,7 @@ import {
 	personalAccountMenu,
 	paymentsMenu,
 	countOutputMenu,
+	subscriptionMenu
 } from "./keyboards/index.ts";
 import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
@@ -32,12 +33,13 @@ bot.api.config.use(parseMode("MarkdownV2"));
 bot.use(rateLimit());
 bot.use(hydrateReply);
 bot.use(setupSession());
+bot.use(subscriptionMenu);
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
 bot.use(settingsMenu);
-
 bot.use(personalAccountMenu);
 bot.use(countOutputMenu);
+marketsMenu.register(subscriptionMenu)
 personalAccountMenu.register(paymentsMenu);
 settingsMenu.register(countOutputMenu);
 //handlers

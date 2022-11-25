@@ -5,8 +5,18 @@ import { Context } from "../types/index.ts";
 
 export const router = new Router<Context>((ctx) => ctx.session.sbazarStep);
 
+
+const sub = router.route("sub");
+sub.on("message:text", async (ctx) => {
+  if (ctx.msg.text==='отмена') {
+    await ctx.reply(`Действие отменено`);
+	await ctx.reply(" Выберите действие ",{reply_markup:mainMenu });
+	ctx.session.sbazarStep = "idle";
+    return;
+  }
+});
 const countMaxAds = router.route("countMaxAds");
-countMaxAds.on("message:text", async (ctx) => {
+countMaxAds.on("message:text", async (ctx:Context) => {
 	/**
 	 * !первая омтена 
 	 */
@@ -31,13 +41,13 @@ countMaxAds.on("message:text", async (ctx) => {
 	ctx.session.sbazarStep = "registrationDate";
 });
 
- countMaxAds.use(async (ctx) => await ctx.reply({ reply_markup: cancel }));
+ countMaxAds.use(async (ctx:Context) => await ctx.reply({ reply_markup: cancel }));
 
 const registrationDate = router.route("registrationDate");
-registrationDate.on("message:text", async (ctx) => {
+registrationDate.on("message:text", async (ctx:Context) => {
 	const countMaxAds = ctx.session.countMaxAds;
 	if (countMaxAds === undefined) {
-		await ctx.reply("предыдущий фильтр не определен");
+		await ctx.reply("Предыдущий фильтр не определен");
 		ctx.session.sbazarStep = "countMaxAds";
 		return;
     }
@@ -72,7 +82,7 @@ registrationDate.on("message:text", async (ctx) => {
 });
 
 const publishDate = router.route("publishDate");
-publishDate.on("message:text", async (ctx) => {
+publishDate.on("message:text", async (ctx:Context) => {
 	const registrationDate = ctx.session.registrationDate;
 	if (registrationDate === undefined) {
 		await ctx.reply("предыдущий фильтр не определен");

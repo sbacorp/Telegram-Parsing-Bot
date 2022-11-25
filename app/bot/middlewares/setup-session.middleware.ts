@@ -17,13 +17,18 @@ export const middleware = (): Middleware<Context> =>
 export function createInitialSessionData(id: string) {
 	return {
 		userId: id,
-		userBalance: 0, // менял для проверки потом убери или поменять надо на переменную 
+		userBalance: 5, // менял для проверки потом убери или поменять надо на переменную 
 		showOwnerName: true,
 		showPrice: true,
 		showTitle: true,
 		onlyWithPhone:false,
 		onlyWithWA:false,
 		countOutput:5,
+		subActive:false,
 		sbazarStep: "idle",
+		subOneDays:4,
+		subThreeDays:6,
+		subSevenDays:13,
+		subMonth:50,
 	};
 }

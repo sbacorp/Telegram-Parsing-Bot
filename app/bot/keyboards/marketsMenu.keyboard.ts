@@ -1,12 +1,9 @@
 import { Menu } from "https://deno.land/x/grammy_menu@v1.1.2/mod.ts";
 import { Context } from "../types/index.ts";
-import { cancel,subscription } from "../keyboards/index.ts";
+import { cancel,subscriptionMenu } from "../keyboards/index.ts";
 
 
 export const marketsMenu = new Menu("marketsMenu")
-
-
-
 	.text(
 		"🇨🇿 sbazar.cz",
 
@@ -21,9 +18,9 @@ export const marketsMenu = new Menu("marketsMenu")
 			// 	await ctx.reply("Пополните баланс", { reply_markup: personalAccountMenu });
 			// 	return;
 			// };
-			if (ctx.session.userBalance == 0 || ctx.session.userBalance < 0){
-				await ctx.reply('Недостаточно средств',{reply_markup:subscription});
-				
+			if (ctx.session.subActive ===false){
+				ctx.session.sbazarStep = 'sub'
+				await ctx.reply('Подписка не активна',{reply_markup:subscriptionMenu});
 				return;
 			};
 			

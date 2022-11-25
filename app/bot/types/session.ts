@@ -6,8 +6,13 @@ export interface SessionData {
 	showTitle: boolean;
 	onlyWithPhone: boolean;
 	onlyWithWA: boolean;
+	subActive: boolean;
 	countOutput: Number;
-	step: "idle" | "countMaxAds" | "registrationDate" | "publishDate";
+	sbazarStep: "idle" |"sub" | "countMaxAds" | "registrationDate" | "publishDate";
+	subOneDays:Number;
+	subThreeDays:Number;
+	subSevenDays:Number;
+	subMonth:Number;
 	countMaxAds?: Number;
 	registrationDate?: Number;
 	publishDate?: Number;
