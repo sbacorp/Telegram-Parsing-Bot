@@ -11,6 +11,7 @@ serve(async (req) => {
         return await handleUpdate(req);
       } catch (err) {
         console.error(err);
+        
       }
     }
   }

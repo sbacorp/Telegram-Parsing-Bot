@@ -11,7 +11,7 @@ export const marketsMenu = new Menu("marketsMenu")
 			const countMaxAds = ctx.session?.countMaxAds;
 			const registrationDate = ctx.session?.registrationDate;
 			const publishDate = ctx.session?.publishDate;
-
+			const urls = ctx.session?.urls;
 			
             // if (ctx.session.userBalance == 0 || ctx.session.userBalance < 0){
 			// 	await ctx.reply('Недостаточно средств');
@@ -28,12 +28,12 @@ export const marketsMenu = new Menu("marketsMenu")
 			  if (
 				countMaxAds !== undefined &&
 				registrationDate !== undefined &&
-				publishDate !== undefined
-
+				publishDate !== undefined&& urls !== undefined
 			) {
 				await ctx.reply(
-					`*🔎 Фильтры:*\n\n\n📃Кол\-во объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n\n\n`
+					`*🔎 Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\nКатегории : ${ctx.session.urls}`
 				);
+				await ctx.reply("")
 			} else {
 				ctx.session.sbazarStep = "countMaxAds";
 				await ctx.reply(

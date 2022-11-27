@@ -5,8 +5,7 @@ import cheerio from "npm:cheerio";
  * !consts
  */
 // const values = { productsCount: 2, daysAgo: 2, year: 15, count: 10 };
-const regex = /[0-9]+/;
-const urls = [`https://www.sbazar.cz/30-elektro-pocitace`];
+// const regex = /[0-9]+/;
 const fetchUserDataURL = "https://www.sbazar.cz/api/v1/users/public?shop_url=";
 /*
 	!about: убираем дубликаты
@@ -22,7 +21,7 @@ function removeDuplicates(arr: any[]) {
 const linksCreator = (urls: string[], count) => {
 	const reconstructedLinks = [];
 	for (let index = 0; index < urls.length; index++) {
-		const category = urls[index].match(regex)?.toString();
+		const category = urls[index]
 		reconstructedLinks.push(
 			`https://www.sbazar.cz/api/v1/items/search?offset=${
 				100 * count
@@ -148,7 +147,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 	return items;
 };
 
-export const parse = async (ctx, values) => {
+export const parse = async (ctx, values, urls) => {
 	await ctx.reply("🔍")
 	let searchedItems = [];
 	let items = [];

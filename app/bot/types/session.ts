@@ -8,7 +8,7 @@ export interface SessionData {
 	onlyWithWA: boolean;
 	subActive: boolean;
 	countOutput: Number;
-	sbazarStep: "idle" |"sub" | "countMaxAds" | "registrationDate" | "publishDate";
+	sbazarStep: "idle" |"sub" | "countMaxAds" | "registrationDate" | "publishDate"|"getUrls";
 	subOneDays:Number;
 	subThreeDays:Number;
 	subSevenDays:Number;
@@ -16,5 +16,6 @@ export interface SessionData {
 	countMaxAds?: Number;
 	registrationDate?: Number;
 	publishDate?: Number;
+	urls?: String[]
 	
 }

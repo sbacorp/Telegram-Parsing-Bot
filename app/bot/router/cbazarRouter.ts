@@ -44,6 +44,7 @@ countMaxAds.on("message:text", async (ctx:Context) => {
  countMaxAds.use(async (ctx:Context) => await ctx.reply({ reply_markup: cancel }));
 
 const registrationDate = router.route("registrationDate");
+
 registrationDate.on("message:text", async (ctx:Context) => {
 	const countMaxAds = ctx.session.countMaxAds;
 	if (countMaxAds === undefined) {
@@ -106,13 +107,54 @@ publishDate.on("message:text", async (ctx:Context) => {
 		await ctx.reply("*Неверно, повторите попытку\!*");
 		return;
 	}
+
 	ctx.session.publishDate = publishDate;
+	await ctx.reply("Готово");
+	await ctx.replyWithHTML(
+		"<b>🔎 Запуск поиска объявлений</b>\n\n📃 <b>Введите через запятую намера категорий для парсинга</b>\n\n Пример : https://wwwsbazarcz/30-elektro-pocitace => номер 30",
+		{ reply_markup: cancel }	 
+	);
+	ctx.session.sbazarStep = "getUrls";
+	
+});
+
+
+
+const getUrls = router.route("getUrls");
+getUrls.on("message:text", async (ctx:Context) => {
+	const publishDate = ctx.session.publishDate;
+	if (publishDate === undefined) {
+		await ctx.reply("предыдущий фильтр не определен");
+		ctx.session.sbazarStep = "publishDate";
+		return;
+	}
+	/**
+    * !третья омтена 
+    */
+	 if ( ctx.msg.text ==='отмена'){
+		await ctx.reply(`Действие отменено`);
+		await ctx.reply(
+			"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату публикации товара `дней назад`*\n\n Пример : ");
+        ctx.session.sbazarStep = "publishDate";
+        return;
+	}
+	const urls = ctx.msg.text.split(',')
+
+	// if () {
+	// 	await ctx.reply("*Неверно, повторите попытку\!*");
+	// 	return;
+	// }
+	// else{
+	// 	ctx.session.urls = urls;
+	// }
+	ctx.session.urls = urls;
+	
 	await ctx.reply(
-		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}`,{ reply_markup: cancel }
+		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}\nКатегории: :${ctx.session.urls}`,{ reply_markup: cancel }
 	);
 	
 	const values = { productsCount: Number(ctx.session.countMaxAds), daysAgo: Number(ctx.session.publishDate), year: 2022-Number(ctx.session.registrationDate), count: ctx.session.countOutput};
-	await parse(ctx, values);
+	await parse(ctx, values, urls);
 	ctx.session.sbazarStep = "idle";
 });
 router.otherwise(async (ctx) => ctx.answerCallbackQuery("Ошибка"));
