@@ -15,7 +15,7 @@ import {
 	personalAccountMenu,
 	paymentsMenu,
 	countOutputMenu,
-	subscriptionMenu
+	subscriptionMenu,
 } from "./keyboards/index.ts";
 import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
@@ -24,7 +24,9 @@ import { setupSession } from "./middlewares/index.ts";
 
 import { router } from "./router/index.ts";
 
-export const bot = new Bot<Context>(Deno.env.get("BOT_TOKEN"));
+export const bot = new Bot<Context>(
+	"5688898772:AAHP__a-2XsXT-lbq9TgxzEq3pcAERpG6Rw"
+);
 
 // Middlewares
 
@@ -39,7 +41,7 @@ bot.use(paymentsMenu);
 bot.use(settingsMenu);
 bot.use(personalAccountMenu);
 bot.use(countOutputMenu);
-marketsMenu.register(subscriptionMenu)
+marketsMenu.register(subscriptionMenu);
 personalAccountMenu.register(paymentsMenu);
 settingsMenu.register(countOutputMenu);
 //handlers
