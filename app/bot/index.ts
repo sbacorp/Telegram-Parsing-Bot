@@ -20,10 +20,10 @@ import {
 import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
 
-import { setupSession } from "./middlewares/index.ts";
+import { setupSession,dbConnect } from "./middlewares/index.ts";
 
 import { router } from "./router/index.ts";
-
+import {UserModel} from '../server/models.ts'
 export const bot = new Bot<Context>(
 	"5688898772:AAHP__a-2XsXT-lbq9TgxzEq3pcAERpG6Rw"
 );
@@ -33,8 +33,9 @@ export const bot = new Bot<Context>(
 bot.api.config.use(apiThrottler());
 bot.api.config.use(parseMode("MarkdownV2"));
 bot.use(rateLimit());
+
 bot.use(hydrateReply);
-bot.use(setupSession());
+bot.use(dbConnect())
 bot.use(subscriptionMenu);
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
@@ -66,13 +67,20 @@ bot.hears("🔎 Начать поиск", async (ctx: Context) => {
 	});
 });
 bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
+	try {
+	const chatId = ctx.chat.id;
+	const user = await UserModel.findOne({chatId})
 	await ctx.reply(
-		`*🔐 Личный кабинет*\n\n Баланс : *${ctx.session.userBalance}$*\n\n *Промокод:*\n не активирован`,
+		`*🔐 Личный кабинет*\n\n Баланс : *${user.userBalance}$*\n\n *Промокод:*\n не активирован`,
 		{
 			reply_markup: personalAccountMenu,
 			disable_web_page_preview: true,
 		}
-	);
+	);	
+	} catch (error) {
+		await ctx.reply("Произошла ошибка, попробуйте снова")
+	}
+	
 });
 bot.use(router);
 bot.on("message:text", async (ctx) => {

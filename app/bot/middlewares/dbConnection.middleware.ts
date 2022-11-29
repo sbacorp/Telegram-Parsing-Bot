@@ -1,12 +1,18 @@
 import { Middleware, session } from "https://deno.land/x/grammy@v1.12.0/mod.ts";
-import { Context } from "../types/index.ts";
 import { sequelize } from "../../server/db.ts";
+import { Context } from "../types/index.ts";
 
-export const middleware = (): Middleware<Context> =>
-  session({
-    initial: createInitialSessionData,
-  });
-	
+export const middleware = (): Middleware<Context> => async (ctx, next) => {
+
+	await sequelize.authenticate();
+	await sequelize.sync();
+	await session({
+		initial: createInitialSessionData,
+	  });
+		
+	return next();
+  };
+
 export function createInitialSessionData() {
 	return {
 		showOwnerName: true,

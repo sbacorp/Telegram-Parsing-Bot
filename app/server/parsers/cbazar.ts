@@ -76,7 +76,6 @@ const fetchSearched = async () => {
 	const searchedItems = shopIds.map((obj) => obj.shopId);
 	return searchedItems;
 };
-// fetchItems(urls, count,items)
 const parsePhone = async (url: string) => {
 	const res = await fetch(url);
 	const html = await res.text();
