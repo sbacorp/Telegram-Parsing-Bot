@@ -5,14 +5,14 @@ export const UserModel = sequelize.define("user", {
 	id: {
 		type: DataTypes.INTEGER,
 		primaryKey: true,
-		autoIncrement: true,
+		autoIncrement: true
 	},
 	chatId: {
 		type: DataTypes.STRING,
-		unique: true,
+		unique: true
 	},
 	userBalance: {
 		type: DataTypes.INTEGER,
-		defaultValue: 10,
+		defaultValue: 0
 	},
 });
