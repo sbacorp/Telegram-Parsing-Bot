@@ -20,7 +20,7 @@ import {
 import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
 
-import { setupSession,dbConnect } from "./middlewares/index.ts";
+import { setupSession } from "./middlewares/index.ts";
 
 import { router } from "./router/index.ts";
 import {UserModel} from '../server/models.ts'
@@ -33,9 +33,8 @@ export const bot = new Bot<Context>(
 bot.api.config.use(apiThrottler());
 bot.api.config.use(parseMode("MarkdownV2"));
 bot.use(rateLimit());
-
 bot.use(hydrateReply);
-bot.use(dbConnect())
+bot.use(setupSession())
 bot.use(subscriptionMenu);
 bot.use(marketsMenu);
 bot.use(paymentsMenu);
@@ -67,9 +66,11 @@ bot.hears("🔎 Начать поиск", async (ctx: Context) => {
 	});
 });
 bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
+	const chatId = ctx.chat.id.toString();
+	console.log(chatId);
+	
 	try {
-	const chatId = ctx.chat.id;
-	const user = await UserModel.findOne({chatId})
+	const user = await UserModel.findOne({where:{chatId:chatId}})
 	await ctx.reply(
 		`*🔐 Личный кабинет*\n\n Баланс : *${user.userBalance}$*\n\n *Промокод:*\n не активирован`,
 		{
@@ -78,7 +79,7 @@ bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
 		}
 	);	
 	} catch (error) {
-		await ctx.reply("Произошла ошибка, попробуйте снова")
+		await ctx.replyWithHTML(error)
 	}
 	
 });

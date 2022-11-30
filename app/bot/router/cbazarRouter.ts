@@ -3,9 +3,33 @@ import { parse } from "../../server/parsers/cbazar.ts";
 import { allowedCategories } from "../headers.ts";
 import { cancel,mainMenu } from "../keyboards/index.ts";
 import { Context } from "../types/index.ts";
-
+import {UserModel} from "../../server/models.ts"
 export const router = new Router<Context>((ctx) => ctx.session.sbazarStep);
+const promo = router.route("promo");
 
+promo.on("message:text", async (ctx:Context) => {  
+  if (ctx.msg.text==='отмена') {
+    await ctx.reply(`Действие отменено`);
+	await ctx.reply(" Выберите действие ",{reply_markup:mainMenu });
+	ctx.session.sbazarStep = "idle";
+    return;
+  }
+  if (ctx.msg.text==='promo1') {
+		try {
+			const chatId = ctx.chat.id.toString();
+			const user = await UserModel.findOne({where:{chatId:chatId}})
+			user.userBalance +=10;
+			user.save();
+		} catch (e) {
+			console.log(e);
+			ctx.replyWithHTML(e)
+		}
+		ctx.reply('*Успешно*', {reply_markup:mainMenu});
+	ctx.session.sbazarStep = "idle";
+    return;
+  }
+
+});
 
 const sub = router.route("sub");
 sub.on("message:text", async (ctx) => {

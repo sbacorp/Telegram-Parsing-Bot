@@ -1,1 +1,1 @@
-export { middleware as dbConnect } from "./setup-session.middleware.ts";
+export { middleware as setupSession } from "./setup-session.middleware.ts";
