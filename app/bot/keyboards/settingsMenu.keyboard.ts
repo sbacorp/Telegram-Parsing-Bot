@@ -74,4 +74,13 @@ export const settingsMenu = new Menu("mainSettingsMenu")
 		await ctx.answerCallbackQuery("✅Готово");
 	})
 	.row()
+	.text("30",async(ctx:Context) => {
+		ctx.session.countOutput = 30;
+		await ctx.answerCallbackQuery("✅Готово");
+	})
+	.text("50",async(ctx:Context) => {
+		ctx.session.countOutput = 50;
+		await ctx.answerCallbackQuery("✅Готово");
+	})
+	.row()
 	.back("◀️ Назад");

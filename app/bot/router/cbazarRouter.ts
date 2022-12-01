@@ -1,7 +1,7 @@
 import { Router } from "https://deno.land/x/grammy_router@v2.0.0/router.ts";
 import { parse } from "../../server/parsers/cbazar.ts";
 import { allowedCategories } from "../headers.ts";
-import { cancel,mainMenu } from "../keyboards/index.ts";
+import { cancel,mainMenu,BeginParse} from "../keyboards/index.ts";
 import { Context } from "../types/index.ts";
 import {UserModel} from "../../server/models.ts"
 export const router = new Router<Context>((ctx) => ctx.session.sbazarStep);
@@ -154,7 +154,7 @@ getUrls.on("message:text", async (ctx:Context) => {
 		return;
 	}
 	/**
-    * !третья омтена
+    * !четвертая омтена
     */
 	 if ( ctx.msg.text ==='отмена'){
 		await ctx.reply(`Действие отменено`);
@@ -164,23 +164,45 @@ getUrls.on("message:text", async (ctx:Context) => {
         return;
 	}
 	const urls = ctx.msg.text.split(',')
-	const found = urls.some(r=> allowedCategories.indexOf(r) < 0)
-	console.log(found);
-	
-	if (found) {
-		await ctx.reply("*Неверно, повторите попытку*");
-		return;
-	}
-	else{
+		// const found = urls.some(r=> allowedCategories.indexOf(r) < 0)
+		// console.log(found);	
+		// if (found) {
+		// await ctx.reply("*Неверно, повторите попытку*");
+		// return;
+		// }
+	    // else{
+			// ctx.session.urls = urls;
+		// }
+		for ( var i=0;i <urls.length;i++ ){
+			console.log(urls[i]);
+			 const found =allowedCategories.includes(urls[i])
+			if (found){
+				console.log("Все заебись");
+			}
+			else {
+				console.log("eror");
+				await ctx.reply("*Неверно, повторите попытку*");
+				return;
+			}
+		};
 		ctx.session.urls = urls;
-	}
-	
-	await ctx.reply(
-		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}\nКатегории: :${ctx.session.urls}`,{ reply_markup: cancel }
+		
+		await ctx.reply(
+		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}\nКатегории: :${ctx.session.urls}`,{ reply_markup: BeginParse }
 	);
-	
+	// if (ctx.msg.text==='Начать парсинг'){}
 	const values = { productsCount: Number(ctx.session.countMaxAds), daysAgo: Number(ctx.session.publishDate), year: 2022-Number(ctx.session.registrationDate), count: ctx.session.countOutput};
 	await parse(ctx, values, urls);
 	ctx.session.sbazarStep = "idle";
+	
+	// if (ctx.msg.text ==='Изменить фильтры'){
+	// 	await ctx.reply("Действие отменено");
+	// 	await ctx.replyWithHTML(
+	// 		"<b>🔎 Запуск поиска объявлений</b>\n\n📃 <b>Введите через запятую намера категорий для парсинга</b>\n\n Пример : https://wwwsbazarcz/30-elektro-pocitace => номер 30",
+	// 		{ reply_markup: cancel }	 
+	// 	);
+	// 	ctx.session.sbazarStep = "countMaxAds";
+	// 	return;
+	// }
 });
 router.otherwise(async (ctx) => ctx.answerCallbackQuery("Ошибка"));

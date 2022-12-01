@@ -11,3 +11,4 @@ export { personalAccountMenu } from "./personalAccountMenu.keyboard.ts";
 export { paymentsMenu } from "./paymentsMenu.keyboard.ts";  
 export { cancel } from "./cancel.keyboard.ts";
 export { subscriptionMenu} from "./subscriptionMenu.keyboards.ts"
+export {BeginParse} from "./beginparse.keyboards.ts";
