@@ -160,19 +160,10 @@ getUrls.on("message:text", async (ctx:Context) => {
 		await ctx.reply(`Действие отменено`);
 		await ctx.reply(
 			"*🔎 Запуск поиска объявлений*\n\n📃 *Введите минимальную дату публикации товара `дней назад`*\n\n Пример : 3");
-        ctx.session.sbazarStep = "publishDate";
-        return;
+		ctx.session.sbazarStep = "publishDate";
+		return;
 	}
 	const urls = ctx.msg.text.split(',')
-		// const found = urls.some(r=> allowedCategories.indexOf(r) < 0)
-		// console.log(found);	
-		// if (found) {
-		// await ctx.reply("*Неверно, повторите попытку*");
-		// return;
-		// }
-	    // else{
-			// ctx.session.urls = urls;
-		// }
 		for ( var i=0;i <urls.length;i++ ){
 			console.log(urls[i]);
 			 const found =allowedCategories.includes(urls[i])
@@ -190,19 +181,27 @@ getUrls.on("message:text", async (ctx:Context) => {
 		await ctx.reply(
 		`*Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\n📤Количество для выдачи: ${ctx.session.countOutput}\nКатегории: :${ctx.session.urls}`,{ reply_markup: BeginParse }
 	);
-	// if (ctx.msg.text==='Начать парсинг'){}
-	const values = { productsCount: Number(ctx.session.countMaxAds), daysAgo: Number(ctx.session.publishDate), year: 2022-Number(ctx.session.registrationDate), count: ctx.session.countOutput};
-	await parse(ctx, values, urls);
-	ctx.session.sbazarStep = "idle";
 	
-	// if (ctx.msg.text ==='Изменить фильтры'){
-	// 	await ctx.reply("Действие отменено");
-	// 	await ctx.replyWithHTML(
-	// 		"<b>🔎 Запуск поиска объявлений</b>\n\n📃 <b>Введите через запятую намера категорий для парсинга</b>\n\n Пример : https://wwwsbazarcz/30-elektro-pocitace => номер 30",
-	// 		{ reply_markup: cancel }	 
-	// 	);
-	// 	ctx.session.sbazarStep = "countMaxAds";
-	// 	return;
-	// }
+	ctx.session.sbazarStep = "startingSbazar";
+	
 });
+
+const startingSbazar = router.route("startingSbazar");
+startingSbazar.on("message:text", async (ctx:Context) => {
+if (ctx.msg.text==='Начать парсинг'){
+	const values = { productsCount: Number(ctx.session.countMaxAds), daysAgo: Number(ctx.session.publishDate), year: 2022-Number(ctx.session.registrationDate), count: ctx.session.countOutput};
+	await parse(ctx, values, ctx.session.urls);
+}
+	if (ctx.msg.text ==='Изменить фильтры'){
+		await ctx.reply("Действие отменено");
+		await ctx.replyWithHTML(
+			"<b>🔎 Запуск поиска объявлений</b>\n\n📃 <b>Введите через запятую намера категорий для парсинга</b>\n\n Пример : https://wwwsbazarcz/30-elektro-pocitace => номер 30",
+			{ reply_markup: cancel }	 
+		);
+		ctx.session.sbazarStep = "countMaxAds";
+		return;
+	}
+});
+
+
 router.otherwise(async (ctx) => ctx.answerCallbackQuery("Ошибка"));

@@ -13,7 +13,8 @@ export interface SessionData {
 		| "countMaxAds"
 		| "registrationDate"
 		| "publishDate"
-		| "getUrls";
+		| "getUrls"
+		| "startingSbazar";
 	subOneDays: Number;
 	subThreeDays: Number;
 	subSevenDays: Number;

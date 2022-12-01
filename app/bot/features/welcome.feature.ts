@@ -20,7 +20,6 @@ feature.command("start", async (ctx: Context) => {
     }
 	
 	await ctx.reply(greetings);
-	await ctx.reply(ctx.chat.id);
 	await ctx.reply("*Выберите действие*", {
 		reply_markup: mainMenu,
 		

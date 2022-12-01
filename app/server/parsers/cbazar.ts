@@ -21,7 +21,7 @@ function removeDuplicates(arr: any[]) {
 const linksCreator = (urls: string[], count) => {
 	const reconstructedLinks = [];
 	for (let index = 0; index < urls.length; index++) {
-		const category = urls[index]
+		const category = urls[index];
 		reconstructedLinks.push(
 			`https://www.sbazar.cz/api/v1/items/search?offset=${
 				100 * count
@@ -81,13 +81,11 @@ const parsePhone = async (url: string) => {
 	const html = await res.text();
 	const $ = cheerio.load(html);
 	const number = $("a.c-seller-card__contact-phone").text().replace(/ /g, "");
-	
 
 	if (number === "") {
 		return null;
 	} else {
 		const phone = { wa: Boolean(await doPostRequest(number)), number: number };
-
 
 		return phone;
 	}
@@ -121,23 +119,37 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			searchedItems.push(array[i].user.id);
 			await addShop(array[i].user.id);
 			await ctx.replyWithPhoto(
-			`${array[i].images[0]?.url===''?'https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png':`http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`}`,
+				`${
+					array[i].images[0]?.url === ""
+						? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
+						: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+				}`,
 				{
-				caption: `${!ctx.session.showTitle?'':`✍️ Название :<code>${array[i].name}</code>\n`}
-				${!ctx.session.showPrice?'':`💵Цена :${array[i].price} Kč\n`}
-				${!ctx.session.showOwnerName?'':`👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>\n`}
+					caption: `${
+						!ctx.session.showTitle
+							? ""
+							: `✍️ Название :<code>${array[i].name}</code>`
+					}
+				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
+				${
+					!ctx.session.showOwnerName
+						? ""
+						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
+				}
 				<a href=\"https://www.sbazar.cz/
 				${array[i].user.user_service.shop_url}/detail/
-				${array[i].seo_name}\">📌Ссылка на обьявление</a>\n
-				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>\n
-				Перейти в WhatsApp : ${phone?.wa
+				${array[i].seo_name}\">📌Ссылка на обьявление</a>
+				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
+				☎️Перейти в WhatsApp : ${
+					phone?.wa
 						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "WA нет"}\n
-				Количество товаров :${count}\n
-				📅Дата публикации: ${array[i].create_date}\n
+						: "WA нет"
+				}
+				🗂Количество товаров :${count}
+				📅Дата публикации: ${array[i].create_date}
 				📅 Дата регистрации: ${year}`,
-				disable_web_page_preview: true,
-				parse_mode: "HTML",
+					disable_web_page_preview: true,
+					parse_mode: "HTML",
 				}
 			);
 		}
@@ -147,28 +159,25 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 };
 
 export const parse = async (ctx, values, urls) => {
-	await ctx.reply("🔍")
+	await ctx.reply("🔍");
 	let searchedItems = [];
 	let items = [];
 	let tmpItems = [];
 	let count = 0;
 
-	
-	
 	while (items.length < Number(values.count)) {
 		searchedItems = await fetchSearched();
 		tmpItems = await fetchItems(urls, count);
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
 		count += 1;
-		
 	}
-	if (ctx.msg.text==='отмена'){
-		await ctx.reply("Парсинг отменен")
+	if (ctx.msg.text === "отмена") {
+		await ctx.reply("Парсинг отменен");
 		ctx.session.sbazarStep = "idle";
 		return;
 	}
 
-	await ctx.reply("Поиск завершен")
+	await ctx.reply("Поиск завершен");
 };
 
 async function doPostRequest(phone) {
