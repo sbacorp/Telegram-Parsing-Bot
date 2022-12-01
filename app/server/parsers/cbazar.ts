@@ -1,7 +1,7 @@
 import axios from "npm:axios";
 import { connection } from "../../supabase.ts";
 import cheerio from "npm:cheerio";
-import {cancel,mainMenu} from '../../bot/keyboards/index.ts'
+import { cancel, mainMenu } from "../../bot/keyboards/index.ts";
 /**
  * !consts
  */
@@ -198,7 +198,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 						}
 					);
 				}
-			} else if(!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
+			} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
 				items.push(array[i]);
 				searchedItems.push(array[i].user.id);
 				await addShop(array[i].user.id);
@@ -244,7 +244,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 };
 
 export const parse = async (ctx, values, urls) => {
-	await ctx.reply("🔍", {reply_markup:cancel});
+	await ctx.reply("🔍", { reply_markup: cancel });
 	let searchedItems = [];
 	let items = [];
 	let tmpItems = [];
@@ -256,14 +256,8 @@ export const parse = async (ctx, values, urls) => {
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
 		count += 1;
 	}
-	if (ctx.msg.text === "отмена") {
-		await ctx.reply("Парсинг отменен");
-		ctx.session.sbazarStep = "idle";
-		return;
-	}
-
-	return ctx.reply("*Поиск завершен*",{reply_markup:mainMenu} );
-
+	console.log("HUI SLAVI BOL`SHOI");
+	return ctx.reply("*Поиск завершен*", { reply_markup: mainMenu });
 };
 
 async function doPostRequest(phone) {

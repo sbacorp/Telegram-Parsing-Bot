@@ -67,7 +67,6 @@ bot.hears("🔎 Начать поиск", async (ctx: Context) => {
 });
 bot.hears("🔐 Личный кабинет", async (ctx: Context) => {
 	const chatId = ctx.chat.id.toString();
-	console.log(chatId);
 	
 	try {
 	const user = await UserModel.findOne({where:{chatId:chatId}})
