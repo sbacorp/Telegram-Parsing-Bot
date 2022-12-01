@@ -198,7 +198,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 						}
 					);
 				}
-			} else {
+			} else if(!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
 				items.push(array[i]);
 				searchedItems.push(array[i].user.id);
 				await addShop(array[i].user.id);
