@@ -1,7 +1,6 @@
 import { Menu } from "https://deno.land/x/grammy_menu@v1.1.2/mod.ts";
 import { Context } from "../types/index.ts";
-import { cancel,subscriptionMenu } from "../keyboards/index.ts";
-import { parse } from "../../server/parsers/cbazar.ts";
+import { cancel,subscriptionMenu,BeginParse } from "../keyboards/index.ts";
 
 
 export const marketsMenu = new Menu("marketsMenu")
@@ -26,10 +25,10 @@ export const marketsMenu = new Menu("marketsMenu")
 				publishDate !== undefined&& urls !== undefined
 			) {
 				await ctx.reply(
-					`*🔎 Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\nКатегории : ${ctx.session.urls}`
+					`*🔎 Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\nКатегории : ${ctx.session.urls}`,
+					{ reply_markup: BeginParse }
 				);
-				const values = { productsCount: Number(ctx.session.countMaxAds), daysAgo: Number(ctx.session.publishDate), year: 2022-Number(ctx.session.registrationDate), count: ctx.session.countOutput};
-				await parse(ctx, values, urls);
+				ctx.session.sbazarStep = "startingSbazar";
 			} else {
 				ctx.session.sbazarStep = "countMaxAds";
 				await ctx.reply(

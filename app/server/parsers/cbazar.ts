@@ -1,6 +1,7 @@
 import axios from "npm:axios";
 import { connection } from "../../supabase.ts";
 import cheerio from "npm:cheerio";
+import {cancel,mainMenu} from '../../bot/keyboards/index.ts'
 /**
  * !consts
  */
@@ -104,6 +105,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			})
 			.filter((obj) => !searchedItems.includes(obj?.user?.id))
 	);
+
 	for (let i = 0; i < array.length; i++) {
 		const phone = await parsePhone(
 			`https://www.sbazar.cz/${array[i].user.user_service.shop_url}/detail/${array[i].seo_name}`
@@ -115,21 +117,23 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			Date.parse(year) / 1000 >=
 				Math.floor(Date.now() / 1000) - 31556926 * values.year
 		) {
-			items.push(array[i]);
-			searchedItems.push(array[i].user.id);
-			await addShop(array[i].user.id);
-			await ctx.replyWithPhoto(
-				`${
-					array[i].images[0]?.url === ""
-						? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
-						: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-				}`,
-				{
-					caption: `${
-						!ctx.session.showTitle
-							? ""
-							: `✍️ Название :<code>${array[i].name}</code>`
-					}
+			if (ctx.session.onlyWithWA === true) {
+				if (phone?.wa) {
+					items.push(array[i]);
+					searchedItems.push(array[i].user.id);
+					await addShop(array[i].user.id);
+					await ctx.replyWithPhoto(
+						`${
+							array[i].images[0]?.url === ""
+								? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
+								: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+						}`,
+						{
+							caption: `${
+								!ctx.session.showTitle
+									? ""
+									: `✍️ Название :<code>${array[i].name}</code>`
+							}
 				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
 				${
 					!ctx.session.showOwnerName
@@ -148,10 +152,91 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 				🗂Количество товаров :${count}
 				📅Дата публикации: ${array[i].create_date}
 				📅 Дата регистрации: ${year}`,
-					disable_web_page_preview: true,
-					parse_mode: "HTML",
+							disable_web_page_preview: true,
+							parse_mode: "HTML",
+						}
+					);
 				}
-			);
+			}
+			if (ctx.session.onlyWithPhone === true) {
+				if (phone?.number != null) {
+					items.push(array[i]);
+					searchedItems.push(array[i].user.id);
+					await addShop(array[i].user.id);
+					await ctx.replyWithPhoto(
+						`${
+							array[i].images[0]?.url === ""
+								? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
+								: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+						}`,
+						{
+							caption: `${
+								!ctx.session.showTitle
+									? ""
+									: `✍️ Название :<code>${array[i].name}</code>`
+							}
+				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
+				${
+					!ctx.session.showOwnerName
+						? ""
+						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
+				}
+				<a href=\"https://www.sbazar.cz/
+				${array[i].user.user_service.shop_url}/detail/
+				${array[i].seo_name}\">📌Ссылка на обьявление</a>
+				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
+				☎️Перейти в WhatsApp : ${
+					phone?.wa
+						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+						: "WA нет"
+				}
+				🗂Количество товаров :${count}
+				📅Дата публикации: ${array[i].create_date}
+				📅 Дата регистрации: ${year}`,
+							disable_web_page_preview: true,
+							parse_mode: "HTML",
+						}
+					);
+				}
+			} else {
+				items.push(array[i]);
+				searchedItems.push(array[i].user.id);
+				await addShop(array[i].user.id);
+				await ctx.replyWithPhoto(
+					`${
+						array[i].images[0]?.url === ""
+							? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
+							: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+					}`,
+					{
+						caption: `${
+							!ctx.session.showTitle
+								? ""
+								: `✍️ Название :<code>${array[i].name}</code>`
+						}
+				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
+				${
+					!ctx.session.showOwnerName
+						? ""
+						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
+				}
+				<a href=\"https://www.sbazar.cz/
+				${array[i].user.user_service.shop_url}/detail/
+				${array[i].seo_name}\">📌Ссылка на обьявление</a>
+				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
+				☎️Перейти в WhatsApp : ${
+					phone?.wa
+						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+						: "WA нет"
+				}
+				🗂Количество товаров :${count}
+				📅Дата публикации: ${array[i].create_date}
+				📅 Дата регистрации: ${year}`,
+						disable_web_page_preview: true,
+						parse_mode: "HTML",
+					}
+				);
+			}
 		}
 	}
 
@@ -159,7 +244,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 };
 
 export const parse = async (ctx, values, urls) => {
-	await ctx.reply("🔍");
+	await ctx.reply("🔍", {reply_markup:cancel});
 	let searchedItems = [];
 	let items = [];
 	let tmpItems = [];
@@ -177,7 +262,8 @@ export const parse = async (ctx, values, urls) => {
 		return;
 	}
 
-	await ctx.reply("Поиск завершен");
+	return ctx.reply("*Поиск завершен*",{reply_markup:mainMenu} );
+
 };
 
 async function doPostRequest(phone) {
