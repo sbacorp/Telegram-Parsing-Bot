@@ -2,6 +2,8 @@ import axios from "npm:axios";
 import { connection } from "../../supabase.ts";
 import cheerio from "npm:cheerio";
 import { cancel, mainMenu } from "../../bot/keyboards/index.ts";
+import { ShopModel } from "../../server/models.ts";
+import { sequelize } from "../../server/db.ts";
 /**
  * !consts
  */
@@ -46,11 +48,14 @@ const countUserItems = async (id) => {
 };
 const addShop = async (id) => {
 	let shopId = id;
-	let { data: error } = await connection
-		.from("shpIds")
-		.insert({ shopId })
-		.single();
-	if (error) console.log("error", error);
+	try {
+		await sequelize.authenticate();
+		await sequelize.sync();
+		await ShopModel.create({ shopId });
+	} catch (err) {
+		console.error(err);
+	}
+	
 };
 // about  запрос данных о продаце
 const fetchUserDate = async (shop_url) => {
@@ -59,6 +64,7 @@ const fetchUserDate = async (shop_url) => {
 		return data.results[0].ubox_created_date;
 	} catch (error) {}
 };
+
 
 const fetchItems = async (urls, count) => {
 	const fetchingLinks = linksCreator(urls, count);
@@ -72,11 +78,19 @@ const fetchItems = async (urls, count) => {
 	}
 };
 
+
 const fetchSearched = async () => {
-	let { data: shopIds } = await connection.from("shpIds").select("shopId");
-	const searchedItems = shopIds.map((obj) => obj.shopId);
-	return searchedItems;
+	await sequelize.authenticate();
+	await sequelize.sync();
+	const searchedShops=[];
+	const searchedItems:any = await ShopModel.findAll({ raw: true });
+	for (let index =0; index < searchedItems.length; index++) {
+		searchedShops.push(searchedItems[index]?.shopId);
+	}
+	return searchedShops;
+
 };
+
 const parsePhone = async (url: string) => {
 	const res = await fetch(url);
 	const html = await res.text();
@@ -198,6 +212,9 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 						}
 					);
 				}
+				else{
+					continue;
+				}
 			} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
 				items.push(array[i]);
 				searchedItems.push(array[i].user.id);
@@ -244,7 +261,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 };
 
 export const parse = async (ctx, values, urls) => {
-	await ctx.reply("🔍", { reply_markup: cancel });
+	await ctx.reply("🔍");
 	let searchedItems = [];
 	let items = [];
 	let tmpItems = [];
@@ -256,7 +273,6 @@ export const parse = async (ctx, values, urls) => {
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
 		count += 1;
 	}
-	console.log("HUI SLAVI BOL`SHOI");
 	return ctx.reply("*Поиск завершен*", { reply_markup: mainMenu });
 };
 

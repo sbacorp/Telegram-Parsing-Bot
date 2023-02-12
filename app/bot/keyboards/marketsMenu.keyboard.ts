@@ -41,4 +41,3 @@ export const marketsMenu = new Menu("marketsMenu")
 			
 		}
 	)
-	.text("🇭🇺 jofagos.hu", async (ctx: Context) => {});

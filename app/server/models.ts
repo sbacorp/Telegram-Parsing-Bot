@@ -15,4 +15,24 @@ export const UserModel = sequelize.define("user", {
 		type: DataTypes.INTEGER,
 		defaultValue: 0
 	},
+	
+});
+
+export const ShopModel = sequelize.define("shop", {
+	id: {
+		type: DataTypes.INTEGER,
+		primaryKey: true,
+		autoIncrement: true,
+	},
+	shopId: {
+		type: DataTypes.STRING,
+		unique: true,
+	},
+	count: {
+		type: DataTypes.INTEGER,
+		defaultValue: 1,
+	},
+	shown: {
+		type: DataTypes.ARRAY(DataTypes.STRING),
+	},
 });

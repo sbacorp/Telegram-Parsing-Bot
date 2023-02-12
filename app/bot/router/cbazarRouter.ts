@@ -12,13 +12,18 @@ promo.on("message:text", async (ctx: Context) => {
 		await ctx.reply(`Действие отменено`);
 		await ctx.reply(" Выберите действие ", { reply_markup: mainMenu });
 		ctx.session.sbazarStep = "idle";
+		console.log(ctx)
 		return;
 	}
-	if (ctx.msg.text === "promo1") {
+
+	if (
+		ctx.msg.text === "promo1" &&
+		(ctx.chat.id == "529092540" || ctx.chat.id == "1856156198")
+	) {
 		try {
 			const chatId = ctx.chat.id.toString();
 			const user = await UserModel.findOne({ where: { chatId: chatId } });
-			user.userBalance += 1000;
+			user.userBalance += 100;
 			user.save();
 		} catch (e) {
 			ctx.replyWithHTML(e);
@@ -26,6 +31,8 @@ promo.on("message:text", async (ctx: Context) => {
 		ctx.reply("*Успешно*", { reply_markup: mainMenu });
 		ctx.session.sbazarStep = "idle";
 		return;
+	} else {
+		ctx.reply("*Ошибка*", { reply_markup: mainMenu });
 	}
 });
 
