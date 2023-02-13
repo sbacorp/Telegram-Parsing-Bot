@@ -46,16 +46,14 @@ const countUserItems = async (id) => {
 		console.log(error);
 	}
 };
+
 const addShop = async (id) => {
 	let shopId = id;
 	try {
-		await sequelize.authenticate();
-		await sequelize.sync();
 		await ShopModel.create({ shopId });
 	} catch (err) {
 		console.error(err);
 	}
-	
 };
 // about  запрос данных о продаце
 const fetchUserDate = async (shop_url) => {
@@ -64,7 +62,6 @@ const fetchUserDate = async (shop_url) => {
 		return data.results[0].ubox_created_date;
 	} catch (error) {}
 };
-
 
 const fetchItems = async (urls, count) => {
 	const fetchingLinks = linksCreator(urls, count);
@@ -78,17 +75,13 @@ const fetchItems = async (urls, count) => {
 	}
 };
 
-
 const fetchSearched = async () => {
-	await sequelize.authenticate();
-	await sequelize.sync();
-	const searchedShops=[];
-	const searchedItems:any = await ShopModel.findAll({ raw: true });
-	for (let index =0; index < searchedItems.length; index++) {
+	const searchedShops = [];
+	const searchedItems: any = await ShopModel.findAll({ raw: true });
+	for (let index = 0; index < searchedItems.length; index++) {
 		searchedShops.push(searchedItems[index]?.shopId);
 	}
 	return searchedShops;
-
 };
 
 const parsePhone = async (url: string) => {
@@ -211,8 +204,7 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 							parse_mode: "HTML",
 						}
 					);
-				}
-				else{
+				} else {
 					continue;
 				}
 			} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {

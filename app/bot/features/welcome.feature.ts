@@ -11,8 +11,6 @@ const feature = composer.chatType("private");
 feature.command("start", async (ctx: Context) => {
 	const chatId = ctx.chat.id;
 	try {
-		await sequelize.authenticate();
-		await sequelize.sync();
 		await UserModel.create({chatId})
 	}
 	catch (err) {

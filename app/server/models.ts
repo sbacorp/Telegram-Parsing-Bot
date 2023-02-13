@@ -17,7 +17,6 @@ export const UserModel = sequelize.define("user", {
 	},
 	
 });
-
 export const ShopModel = sequelize.define("shop", {
 	id: {
 		type: DataTypes.INTEGER,
