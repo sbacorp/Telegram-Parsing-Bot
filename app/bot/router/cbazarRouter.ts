@@ -18,7 +18,9 @@ promo.on("message:text", async (ctx: Context) => {
 
 	if (
 		ctx.msg.text === "promo1" &&
-		(ctx.chat.id == "529092540" || ctx.chat.id == "1856156198")
+		(ctx.chat.id == "529092540" ||
+			ctx.chat.id == "1856156198" ||
+			ctx.chat.id == "427545774")
 	) {
 		try {
 			const chatId = ctx.chat.id.toString();

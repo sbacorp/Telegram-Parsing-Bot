@@ -15,7 +15,6 @@ export function createInitialSessionData() {
 		onlyWithPhone:false,
 		onlyWithWA:false,
 		countOutput:5,
-		subActive:false,
 		sbazarStep: "idle",
 		subOneDays:4,
 		subThreeDays:6,

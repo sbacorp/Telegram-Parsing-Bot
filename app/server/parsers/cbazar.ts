@@ -1,7 +1,6 @@
 import axios from "npm:axios";
-import { connection } from "../../supabase.ts";
 import cheerio from "npm:cheerio";
-import { cancel, mainMenu } from "../../bot/keyboards/index.ts";
+import { mainMenu } from "../../bot/keyboards/index.ts";
 import { ShopModel } from "../../server/models.ts";
 import { sequelize } from "../../server/db.ts";
 /**
@@ -22,12 +21,12 @@ function removeDuplicates(arr: any[]) {
 }
 
 const linksCreator = (urls: string[], count) => {
-	const reconstructedLinks = [];
+	const reconstructedLinks: string[] = [];
 	for (let index = 0; index < urls.length; index++) {
 		const category = urls[index];
 		reconstructedLinks.push(
 			`https://www.sbazar.cz/api/v1/items/search?offset=${
-				100 * count
+				300 * count
 			}&category_id=${category}&limit=${100}&timestamp_to=${Math.floor(
 				Date.now() / 1000
 			)}`
@@ -47,10 +46,18 @@ const countUserItems = async (id) => {
 	}
 };
 
-const addShop = async (id) => {
-	let shopId = id;
+const addShop = async (id, ctx) => {
+	let shopId = id.toString();
+	const shopik = await ShopModel.findOne({ where: { shopId: shopId } });
+	const qq = [ctx.chat.id.toString()];
 	try {
-		await ShopModel.create({ shopId });
+		if (shopik) {
+			shopik.count += 1;
+			shopik.shown = shopik.shown.concat(qq);
+			await shopik.save();
+		} else {
+			await ShopModel.create({ shopId, shown: qq });
+		}
 	} catch (err) {
 		console.error(err);
 	}
@@ -76,12 +83,10 @@ const fetchItems = async (urls, count) => {
 };
 
 const fetchSearched = async () => {
-	const searchedShops = [];
-	const searchedItems: any = await ShopModel.findAll({ raw: true });
-	for (let index = 0; index < searchedItems.length; index++) {
-		searchedShops.push(searchedItems[index]?.shopId);
-	}
-	return searchedShops;
+	await sequelize.authenticate();
+	await sequelize.sync();
+	const searchedItems = await ShopModel.findAll({ raw: true });
+	return searchedItems;
 };
 
 const parsePhone = async (url: string) => {
@@ -110,8 +115,16 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 						Math.floor(Date.now() / 1000) - 86400 * values.daysAgo
 				);
 			})
-			.filter((obj) => !searchedItems.includes(obj?.user?.id))
 	);
+	for (let i = 0; i < array.length; i++) {
+		for (let j = 0; j < searchedItems.length; j++) {
+			if (searchedItems[j].shopId.toString() == array[i].user.id.toString())
+				{
+					
+				}
+			
+		}
+	}
 
 	for (let i = 0; i < array.length; i++) {
 		const phone = await parsePhone(
@@ -124,97 +137,96 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 			Date.parse(year) / 1000 >=
 				Math.floor(Date.now() / 1000) - 31556926 * values.year
 		) {
-			if (ctx.session.onlyWithWA === true) {
-				if (phone?.wa) {
-					items.push(array[i]);
-					searchedItems.push(array[i].user.id);
-					await addShop(array[i].user.id);
-					await ctx.replyWithPhoto(
-						`${
-							array[i].images[0]?.url === ""
-								? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
-								: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-						}`,
-						{
-							caption: `${
-								!ctx.session.showTitle
-									? ""
-									: `✍️ Название :<code>${array[i].name}</code>`
-							}
-				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
-				${
-					!ctx.session.showOwnerName
-						? ""
-						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
-				}
-				<a href=\"https://www.sbazar.cz/
-				${array[i].user.user_service.shop_url}/detail/
-				${array[i].seo_name}\">📌Ссылка на обьявление</a>
-				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
-				☎️Перейти в WhatsApp : ${
-					phone?.wa
-						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "WA нет"
-				}
-				🗂Количество товаров :${count}
-				📅Дата публикации: ${array[i].create_date}
-				📅 Дата регистрации: ${year}`,
-							disable_web_page_preview: true,
-							parse_mode: "HTML",
-						}
-					);
-				}
-			}
-			if (ctx.session.onlyWithPhone === true) {
-				if (phone?.number != null) {
-					items.push(array[i]);
-					searchedItems.push(array[i].user.id);
-					await addShop(array[i].user.id);
-					await ctx.replyWithPhoto(
-						`${
-							array[i].images[0]?.url === ""
-								? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
-								: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-						}`,
-						{
-							caption: `${
-								!ctx.session.showTitle
-									? ""
-									: `✍️ Название :<code>${array[i].name}</code>`
-							}
-				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
-				${
-					!ctx.session.showOwnerName
-						? ""
-						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
-				}
-				<a href=\"https://www.sbazar.cz/
-				${array[i].user.user_service.shop_url}/detail/
-				${array[i].seo_name}\">📌Ссылка на обьявление</a>
-				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
-				☎️Перейти в WhatsApp : ${
-					phone?.wa
-						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "WA нет"
-				}
-				🗂Количество товаров :${count}
-				📅Дата публикации: ${array[i].create_date}
-				📅 Дата регистрации: ${year}`,
-							disable_web_page_preview: true,
-							parse_mode: "HTML",
-						}
-					);
-				} else {
-					continue;
-				}
-			} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
-				items.push(array[i]);
-				searchedItems.push(array[i].user.id);
-				await addShop(array[i].user.id);
+			// if (ctx.session.onlyWithWA === true) {
+			// 	if (phone?.wa) {
+			// 		items.push(array[i]);
+			// 		await addShop(array[i].user.id, ctx);
+			// 		await ctx.replyWithPhoto(
+			// 			`${
+			// 				array[i].images[0]?.url === ""
+			// 					? "./browser.jpeg"
+			// 					: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+			// 			}`,
+			// 			{
+			// 				caption: `${
+			// 					!ctx.session.showTitle
+			// 						? ""
+			// 						: `✍️ Название :<code>${array[i].name}</code>`
+			// 				}
+			// 	${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
+			// 	${
+			// 		!ctx.session.showOwnerName
+			// 			? ""
+			// 			: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
+			// 	}
+			// 	<a href=\"https://www.sbazar.cz/
+			// 	${array[i].user.user_service.shop_url}/detail/
+			// 	${array[i].seo_name}\">📌Ссылка на обьявление</a>
+			// 	📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
+			// 	☎️Перейти в WhatsApp : ${
+			// 		phone?.wa
+			// 			? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+			// 			: "WA нет"
+			// 	}
+			// 	🗂Количество товаров :${count}
+			// 	📅Дата публикации: ${array[i].create_date}
+			// 	📅 Дата регистрации: ${year}`,
+			// 				disable_web_page_preview: true,
+			// 				parse_mode: "HTML",
+			// 			}
+			// 		);
+			// 	}
+			// }
+			// if (ctx.session.onlyWithPhone === true) {
+			// 	if (phone?.number != null) {
+			// 		items.push(array[i]);
+			// 		await addShop(array[i].user.id, ctx);
+			// 		await ctx.replyWithPhoto(
+			// 			`${
+			// 				array[i].images[0]?.url === ""
+			// 					? "https://grammy.dev/Y.png"
+			// 					: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+			// 			}`,
+			// 			{
+			// 				caption: `${
+			// 					!ctx.session.showTitle
+			// 						? ""
+			// 						: `✍️ Название :<code>${array[i].name}</code>`
+			// 				}
+			// 	${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
+			// 	${
+			// 		!ctx.session.showOwnerName
+			// 			? ""
+			// 			: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
+			// 	}
+			// 	<a href=\"https://www.sbazar.cz/
+			// 	${array[i].user.user_service.shop_url}/detail/
+			// 	${array[i].seo_name}\">📌Ссылка на обьявление</a>
+			// 	📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
+			// 	☎️Перейти в WhatsApp : ${
+			// 		phone?.wa
+			// 			? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+			// 			: "WA нет"
+			// 	}
+			// 	🗂Количество товаров :${count}
+			// 	📅Дата публикации: ${array[i].create_date}
+			// 	📅 Дата регистрации: ${year}`,
+			// 				disable_web_page_preview: true,
+			// 				parse_mode: "HTML",
+			// 			}
+			// 		);
+			// 	} else {
+			// 		continue;
+			// 	}
+			// }
+			//  else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
+			items.push(array[i]);
+			await addShop(array[i].user.id, ctx);
+			try {
 				await ctx.replyWithPhoto(
 					`${
 						array[i].images[0]?.url === ""
-							? "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ac/No_image_available.svg/1200px-No_image_available.svg.png"
+							? "https://grammy.dev/Y.png"
 							: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
 					}`,
 					{
@@ -245,7 +257,11 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 						parse_mode: "HTML",
 					}
 				);
+			} catch (error) {
+				console.log("photo eblan", error);
 			}
+
+			// }
 		}
 	}
 
