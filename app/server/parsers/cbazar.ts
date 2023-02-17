@@ -106,60 +106,61 @@ const parsePhone = async (url: string) => {
 };
 
 const getOutput = async (tmpItems, searchedItems, values, ctx) => {
-	const chatId = await ctx.chat.id;
-	console.log(chatId);
-	let items = [];
-	let array = removeDuplicates(
-		tmpItems.filter((obj) => {
-			return (
-				obj.user?.user_service &&
-				Date.parse(obj.create_date) / 1000 >=
-					Math.floor(Date.now() / 1000) - 86400 * values.daysAgo
-			);
-		})
-	).filter((element) => {
-		const isMatched = searchedItems.some((searchedItem) => {
-			return (
-				element.user?.id == searchedItem.shopId &&
-				(searchedItem.count > 3 ||
-					searchedItem.shown.includes(ctx.chat.id.toString()))
-			);
+	try {
+		const chatId = await ctx.chat.id;
+		console.log(chatId);
+		let items = [];
+
+		let array = removeDuplicates(
+			tmpItems.filter((obj) => {
+				return (
+					obj.user?.user_service &&
+					Date.parse(obj.create_date) / 1000 >=
+						Math.floor(Date.now() / 1000) - 86400 * values.daysAgo
+				);
+			})
+		).filter((element) => {
+			const isMatched = searchedItems.some((searchedItem) => {
+				return (
+					element.user?.id == searchedItem.shopId &&
+					(searchedItem.count > 3 ||
+						searchedItem.shown.includes(ctx.chat.id.toString()))
+				);
+			});
+			if (isMatched) {
+				console.log("hieeeeten");
+			}
+			return !isMatched;
 		});
-		if (isMatched) {
-			console.log("hieeeeten");
-		}
-		return !isMatched;
-	});
-	for (let i = 0; i < array.length; i++) {
-		const phone = await parsePhone(
-			`https://www.sbazar.cz/${array[i].user.user_service.shop_url}/detail/${array[i].seo_name}`
-		);
-		let count = await countUserItems(array[i].user.id);
-		let year = await fetchUserDate(array[i].user.user_service.shop_url);
-		if (
-			count < values.productsCount &&
-			Date.parse(year) / 1000 >=
-				Math.floor(Date.now() / 1000) - 31556926 * values.year
-		) {
-			
-			if (ctx.session.onlyWithPhone === true) {
-				if (ctx.session.onlyWithWA === true){
-					if(phone?.wa){
-						items.push(array[i]);
-						await addShop(array[i].user.id, ctx);
-						try {
-							await ctx.replyWithPhoto(
-								`${
-									array[i].images[0]?.url === ""
-										? "https://grammy.dev/Y.png"
-										: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-								}`,
-								{
-									caption: `${
-										!ctx.session.showTitle
-											? ""
-											: `✍️ Название :<code>${array[i].name}</code>`
-									}
+		for (let i = 0; i < array.length; i++) {
+			const phone = await parsePhone(
+				`https://www.sbazar.cz/${array[i].user.user_service.shop_url}/detail/${array[i].seo_name}`
+			);
+			let count = await countUserItems(array[i].user.id);
+			let year = await fetchUserDate(array[i].user.user_service.shop_url);
+			if (
+				count < values.productsCount &&
+				Date.parse(year) / 1000 >=
+					Math.floor(Date.now() / 1000) - 31556926 * values.year
+			) {
+				if (ctx.session.onlyWithPhone === true) {
+					if (ctx.session.onlyWithWA === true) {
+						if (phone?.wa) {
+							items.push(array[i]);
+							await addShop(array[i].user.id, ctx);
+							try {
+								await ctx.replyWithPhoto(
+									`${
+										array[i].images[0]?.url === ""
+											? "https://grammy.dev/Y.png"
+											: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+									}`,
+									{
+										caption: `${
+											!ctx.session.showTitle
+												? ""
+												: `✍️ Название :<code>${array[i].name}</code>`
+										}
 				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
 				${
 					!ctx.session.showOwnerName
@@ -186,15 +187,15 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 				} раза
 				`,
 
-									disable_web_page_preview: true,
-									parse_mode: "HTML",
-								}
-							);
-						} catch (error) {
-							console.log("photo eblan", error);
+										disable_web_page_preview: true,
+										parse_mode: "HTML",
+									}
+								);
+							} catch (error) {
+								console.log("photo eblan", error);
+							}
 						}
 					}
-				}
 					if (ctx.session.onlyWithWA === false && phone?.number) {
 						items.push(array[i]);
 						await addShop(array[i].user.id, ctx);
@@ -245,23 +246,22 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 							console.log("photo eblan", error);
 						}
 					}
-			}
-			 else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
-			items.push(array[i]);
-			await addShop(array[i].user.id, ctx);
-			try {
-				await ctx.replyWithPhoto(
-					`${
-						array[i].images[0]?.url === ""
-							? "https://grammy.dev/Y.png"
-							: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-					}`,
-					{
-						caption: `${
-							!ctx.session.showTitle
-								? ""
-								: `✍️ Название :<code>${array[i].name}</code>`
-						}
+				} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
+					items.push(array[i]);
+					await addShop(array[i].user.id, ctx);
+					try {
+						await ctx.replyWithPhoto(
+							`${
+								array[i].images[0]?.url === ""
+									? "https://grammy.dev/Y.png"
+									: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+							}`,
+							{
+								caption: `${
+									!ctx.session.showTitle
+										? ""
+										: `✍️ Название :<code>${array[i].name}</code>`
+								}
 				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
 				${
 					!ctx.session.showOwnerName
@@ -288,20 +288,23 @@ const getOutput = async (tmpItems, searchedItems, values, ctx) => {
 				} раза
 				`,
 
-						disable_web_page_preview: true,
-						parse_mode: "HTML",
+								disable_web_page_preview: true,
+								parse_mode: "HTML",
+							}
+						);
+					} catch (error) {
+						console.log("photo eblan", error);
 					}
-				);
-			} catch (error) {
-				console.log("photo eblan", error);
-			}
-
+				}
 			}
 		}
-	}
 
-	return items;
+		return items;
+	} catch (error) {
+		ctx.reply("Произошла ошибка");
+	}
 };
+
 
 export const parse = async (ctx, values, urls) => {
 	await ctx.reply("🔍");
