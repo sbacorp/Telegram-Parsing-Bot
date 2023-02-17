@@ -26,8 +26,8 @@ const linksCreator = (urls: string[], count) => {
 		const category = urls[index];
 		reconstructedLinks.push(
 			`https://www.sbazar.cz/api/v1/items/search?offset=${
-				300 * count
-			}&category_id=${category}&limit=${100}&timestamp_to=${Math.floor(
+				200 * count
+			}&category_id=${category}&limit=${200}&timestamp_to=${Math.floor(
 				Date.now() / 1000
 			)}`
 		);
@@ -106,205 +106,196 @@ const parsePhone = async (url: string) => {
 };
 
 const getOutput = async (tmpItems, searchedItems, values, ctx) => {
-	try {
-		const chatId = await ctx.chat.id;
-		console.log(chatId);
-		let items = [];
+	const chatId = await ctx.chat.id;
+	console.log(tmpItems.length);
 
-		let array = removeDuplicates(
-			tmpItems.filter((obj) => {
-				return (
-					obj.user?.user_service &&
-					Date.parse(obj.create_date) / 1000 >=
-						Math.floor(Date.now() / 1000) - 86400 * values.daysAgo
-				);
-			})
-		).filter((element) => {
-			const isMatched = searchedItems.some((searchedItem) => {
-				return (
-					element.user?.id == searchedItem.shopId &&
-					(searchedItem.count > 3 ||
-						searchedItem.shown.includes(ctx.chat.id.toString()))
-				);
-			});
-			if (isMatched) {
-				console.log("hieeeeten");
-			}
-			return !isMatched;
-		});
-		for (let i = 0; i < array.length; i++) {
-			const phone = await parsePhone(
-				`https://www.sbazar.cz/${array[i].user.user_service.shop_url}/detail/${array[i].seo_name}`
+	const filteredItems = removeDuplicates(
+		tmpItems.filter((obj) => {
+			return (
+				obj.user?.user_service &&
+				Date.parse(obj.create_date) / 1000 >=
+					Math.floor(Date.now() / 1000) - 86400 * values.daysAgo
 			);
-			let count = await countUserItems(array[i].user.id);
-			let year = await fetchUserDate(array[i].user.user_service.shop_url);
+		})
+	).filter((element) => {
+		const isMatched = searchedItems.some((searchedItem) => {
+			return (
+				element.user?.id == searchedItem.shopId &&
+				(searchedItem.count > 3 ||
+					searchedItem.shown.includes(ctx.chat.id.toString()))
+			);
+		});
+		return !isMatched;
+	});
+
+	const items = await Promise.all(
+		filteredItems.map(async (item) => {
+			const phone = await parsePhone(
+				`https://www.sbazar.cz/${item.user.user_service.shop_url}/detail/${item.seo_name}`
+			);
+			const count = await countUserItems(item.user.id);
+			const year = await fetchUserDate(item.user.user_service.shop_url);
 			if (
-				count < values.productsCount &&
-				Date.parse(year) / 1000 >=
+				count > values.productsCount ||
+				Date.parse(year) / 1000 <=
 					Math.floor(Date.now() / 1000) - 31556926 * values.year
 			) {
-				if (ctx.session.onlyWithPhone === true) {
-					if (ctx.session.onlyWithWA === true) {
-						if (phone?.wa) {
-							items.push(array[i]);
-							await addShop(array[i].user.id, ctx);
-							try {
-								await ctx.replyWithPhoto(
-									`${
-										array[i].images[0]?.url === ""
-											? "https://grammy.dev/Y.png"
-											: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-									}`,
-									{
-										caption: `${
-											!ctx.session.showTitle
-												? ""
-												: `✍️ Название :<code>${array[i].name}</code>`
-										}
-				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
-				${
-					!ctx.session.showOwnerName
-						? ""
-						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
-				}
-				<a href=\"https://www.sbazar.cz/
-				${array[i].user.user_service.shop_url}/detail/
-				${array[i].seo_name}\">📌Ссылка на обьявление</a>
-				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
-				☎️Перейти в WhatsApp : ${
-					phone?.wa
-						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "WA нет"
-				}
-				🗂Количество товаров :${count}
-				📅Дата публикации: ${array[i].create_date}
-				📅 Дата регистрации: ${year}
-				Показано : ${
-					!searchedItems.filter((el) => el.shopId == array[i].user.id)[0]?.count
-						? 0
-						: searchedItems.filter((el) => el.shopId == array[i].user.id)[0]
-								.count
-				} раза
-				`,
-
-										disable_web_page_preview: true,
-										parse_mode: "HTML",
-									}
-								);
-							} catch (error) {
-								console.log("photo eblan", error);
+				console.log(item.user.user_service.shop_url);
+				return null;
+			} else {
+				// 		if (ctx.session.onlyWithPhone === true) {
+				// 			if (ctx.session.onlyWithWA === true) {
+				// 				if (phone?.wa) {
+				// 					await addShop(item.user.id, ctx);
+				// 					try {
+				// 						await ctx.replyWithPhoto(
+				// 							`${
+				// 								item.images[0]?.url === ""
+				// 									? "https://grammy.dev/Y.png"
+				// 									: `http:${item.images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+				// 							}`,
+				// 							{
+				// 								caption: `${
+				// 									!ctx.session.showTitle
+				// 										? ""
+				// 										: `✍️ Название: <code>${item.name}</code>`
+				// 								}
+				//   ${!ctx.session.showPrice ? "" : `💵 Цена: ${item.price} Kč`}
+				//   ${
+				// 				!ctx.session.showOwnerName
+				// 					? ""
+				// 					: `👨 Продавец: <code>${item.user.user_service.shop_url}</code>`
+				// 			}
+				//   <a href=\"https://www.sbazar.cz/${
+				// 				item.user.user_service.shop_url
+				// 			}/detail/${item.seo_name}\">📌 Ссылка на объявление </a>
+				//   📞 Номер: <code>${phone?.number ? phone.number : "номера нет"}</code>
+				//   ☎️ Перейти в WhatsApp: ${
+				// 				phone?.wa
+				// 					? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+				// 					: "WA нет"
+				// 			}
+				//   🗂 Количество товаров: ${count}
+				//   📅 Дата публикации: ${item.create_date}
+				//   📅 Дата регистрации: ${year}
+				//   Показано: ${
+				// 				searchedItems.filter((el) => el.shopId == item.user.id)[0]?.count ||
+				// 				0
+				// 			} раз(а)
+				//   `,
+				// 								disable_web_page_preview: true,
+				// 								parse_mode: "HTML",
+				// 							}
+				// 						);
+				// 						return item;
+				// 					} catch (error) {
+				// 						console.log("photo eblan", error);
+				// 						return null;
+				// 					}
+				// 				}
+				// 			}
+				// 			if (ctx.session.onlyWithWA === false && phone?.number) {
+				// 				await addShop(item.user.id, ctx);
+				// 				try {
+				// 					await ctx.replyWithPhoto(
+				// 						`${
+				// 							item.images[0]?.url === ""
+				// 								? "https://grammy.dev/Y.png"
+				// 								: `http:${item.images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+				// 						}`,
+				// 						{
+				// 							caption: `${
+				// 								!ctx.session.showTitle
+				// 									? ""
+				// 									: `✍️ Название: <code>${item.name}</code>`
+				// 							}
+				//   ${!ctx.session.showPrice ? "" : `💵 Цена: ${item.price} Kč`}
+				//   ${
+				// 				!ctx.session.showOwnerName
+				// 					? ""
+				// 					: `👨 Продавец: <code>${item.user.user_service.shop_url}</code>`
+				// 			}
+				//   <a href=\"https://www.sbazar.cz/${
+				// 				item.user.user_service.shop_url
+				// 			}/detail/${item.seo_name}\">📌 Ссылка на объявление </a>
+				//   📞 Номер: <code>${phone?.number ? phone.number : "номера нет"}</code>
+				//   ☎️ Перейти в WhatsApp: ${
+				// 				phone?.wa
+				// 					? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+				// 					: "WA нет"
+				// 			}
+				//   🗂 Количество товаров: ${count}
+				//   📅 Дата публикации: ${item.create_date}
+				//   📅 Дата регистрации: ${year}
+				//   Показано: ${
+				// 				searchedItems.filter((el) => el.shopId == item.user.id)[0]?.count ||
+				// 				0
+				// 			} раз(а)
+				//   `,
+				// 							disable_web_page_preview: true,
+				// 							parse_mode: "HTML",
+				// 						}
+				// 					);
+				// 					return item;
+				// 				} catch (error) {
+				// 					console.log("photo eblan", error);
+				// 					return null;
+				// 				}
+				// 			}
+				// 		} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
+				await addShop(item.user.id, ctx);
+				try {
+					await ctx.replyWithPhoto(
+						`${
+							item.images[0]?.url === ""
+								? "https://grammy.dev/Y.png"
+								: `http:${item.images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
+						}`,
+						{
+							caption: `${
+								!ctx.session.showTitle
+									? ""
+									: `✍️ Название: <code>${item.name}</code>`
 							}
+          ${!ctx.session.showPrice ? "" : `💵 Цена: ${item.price} Kč`}
+          ${
+						!ctx.session.showOwnerName
+							? ""
+							: `👨 Продавец: <code>${item.user.user_service.shop_url}</code>`
+					}
+          <a href=\"https://www.sbazar.cz/${
+						item.user.user_service.shop_url
+					}/detail/${item.seo_name}\">📌 Ссылка на объявление </a>
+          📞 Номер: <code>${phone?.number ? phone.number : "номера нет"}</code>
+          ☎️ Перейти в WhatsApp: ${
+						phone?.wa
+							? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
+							: "WA нет"
+					}
+          🗂 Количество товаров: ${count}
+          📅 Дата публикации: ${item.create_date}
+          📅 Дата регистрации: ${year}
+          Показано: ${
+						searchedItems.filter((el) => el.shopId == item.user.id)[0]?.count ||
+						0
+					} раз(а)
+          `,
+							disable_web_page_preview: true,
+							parse_mode: "HTML",
 						}
-					}
-					if (ctx.session.onlyWithWA === false && phone?.number) {
-						items.push(array[i]);
-						await addShop(array[i].user.id, ctx);
-						try {
-							await ctx.replyWithPhoto(
-								`${
-									array[i].images[0]?.url === ""
-										? "https://grammy.dev/Y.png"
-										: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-								}`,
-								{
-									caption: `${
-										!ctx.session.showTitle
-											? ""
-											: `✍️ Название :<code>${array[i].name}</code>`
-									}
-				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
-				${
-					!ctx.session.showOwnerName
-						? ""
-						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
+					);
+					return item;
+				} catch (error) {
+					console.log("photo eblan", error);
+					return null;
 				}
-				<a href=\"https://www.sbazar.cz/
-				${array[i].user.user_service.shop_url}/detail/
-				${array[i].seo_name}\">📌Ссылка на обьявление</a>
-				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
-				☎️Перейти в WhatsApp : ${
-					phone?.wa
-						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "WA нет"
-				}
-				🗂Количество товаров :${count}
-				📅Дата публикации: ${array[i].create_date}
-				📅 Дата регистрации: ${year}
-				Показано : ${
-					!searchedItems.filter((el) => el.shopId == array[i].user.id)[0]?.count
-						? 0
-						: searchedItems.filter((el) => el.shopId == array[i].user.id)[0]
-								.count
-				} раза
-				`,
-
-									disable_web_page_preview: true,
-									parse_mode: "HTML",
-								}
-							);
-						} catch (error) {
-							console.log("photo eblan", error);
-						}
-					}
-				} else if (!ctx.session.onlyWithWA && !ctx.session.onlyWithPhones) {
-					items.push(array[i]);
-					await addShop(array[i].user.id, ctx);
-					try {
-						await ctx.replyWithPhoto(
-							`${
-								array[i].images[0]?.url === ""
-									? "https://grammy.dev/Y.png"
-									: `http:${array[i].images[0]?.url}?fl=exf%7Cres,1024,768,1%7Cwrm,/watermark/sbazar.png,10,10%7Cjpg,80,,1`
-							}`,
-							{
-								caption: `${
-									!ctx.session.showTitle
-										? ""
-										: `✍️ Название :<code>${array[i].name}</code>`
-								}
-				${!ctx.session.showPrice ? "" : `💵Цена :${array[i].price} Kč`}
-				${
-					!ctx.session.showOwnerName
-						? ""
-						: `👨 Продавец: <code>${array[i].user.user_service.shop_url}</code>`
-				}
-				<a href=\"https://www.sbazar.cz/
-				${array[i].user.user_service.shop_url}/detail/
-				${array[i].seo_name}\">📌Ссылка на обьявление</a>
-				📞️ Номер:<code>${phone?.number ? phone.number : "номера нет"}</code>
-				☎️Перейти в WhatsApp : ${
-					phone?.wa
-						? `<a href=\"https://wa.me/${phone.number}\">WhatsApp</a>`
-						: "WA нет"
-				}
-				🗂Количество товаров :${count}
-				📅Дата публикации: ${array[i].create_date}
-				📅 Дата регистрации: ${year}
-				Показано : ${
-					!searchedItems.filter((el) => el.shopId == array[i].user.id)[0]?.count
-						? 0
-						: searchedItems.filter((el) => el.shopId == array[i].user.id)[0]
-								.count
-				} раза
-				`,
-
-								disable_web_page_preview: true,
-								parse_mode: "HTML",
-							}
-						);
-					} catch (error) {
-						console.log("photo eblan", error);
-					}
-				}
+				// }
 			}
-		}
+		})
+	);
 
-		return items;
-	} catch (error) {
-		ctx.reply("Произошла ошибка");
-	}
+	return items.filter((item) => item !== null);
 };
-
 
 export const parse = async (ctx, values, urls) => {
 	await ctx.reply("🔍");
@@ -317,8 +308,11 @@ export const parse = async (ctx, values, urls) => {
 		searchedItems = await fetchSearched();
 		tmpItems = await fetchItems(urls, count);
 		items = items.concat(await getOutput(tmpItems, searchedItems, values, ctx));
+
 		count += 1;
 	}
+	console.log(items.length);
+
 	return ctx.reply("*Поиск завершен*", { reply_markup: mainMenu });
 };
 
