@@ -16,6 +16,7 @@ import {
 	paymentsMenu,
 	countOutputMenu,
 	subscriptionMenu,
+	mainMenu
 } from "./keyboards/index.ts";
 import { settingsHeading } from "./headers.ts";
 import { welcomeFeature } from "./features/index.ts";
@@ -36,14 +37,16 @@ bot.use(rateLimit());
 bot.use(hydrateReply);
 bot.use(setupSession())
 bot.use(subscriptionMenu);
-bot.use(marketsMenu);
 bot.use(paymentsMenu);
 bot.use(settingsMenu);
 bot.use(personalAccountMenu);
 bot.use(countOutputMenu);
+bot.use(marketsMenu);
 marketsMenu.register(subscriptionMenu);
 personalAccountMenu.register(paymentsMenu);
 settingsMenu.register(countOutputMenu);
+
+
 //handlers
 bot.use(welcomeFeature);
 bot.hears("⚙️ Настройки", async (ctx: Context) => {

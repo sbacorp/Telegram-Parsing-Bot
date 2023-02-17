@@ -30,7 +30,7 @@ export const marketsMenu = new Menu("marketsMenu").text(
 			urls !== undefined
 		) {
 			await ctx.reply(
-				`*🔎 Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\nКатегории : ${ctx.session.urls}`,
+				`*🔎 Фильтры:*\n\n\n📃Количество объявлений: ${ctx.session.countMaxAds}\n📅 Дата регистрации: ${ctx.session.registrationDate}\n🕜 Дата публикации:  ${ctx.session.publishDate}\nКатегории : ${ctx.session.urls}\n📤Количество для выдачи: ${ctx.session.countOutput}\n`,
 				{ reply_markup: BeginParse }
 			);
 			ctx.session.sbazarStep = "startingSbazar";
@@ -40,7 +40,6 @@ export const marketsMenu = new Menu("marketsMenu").text(
 				"*🔎 Запуск поиска объявлений*\n\n📃 *Введите максимально допустимое количество активных объявлений у продавца*\n\n Пример : 10",
 				{ reply_markup: cancel }
 			);
-			await ctx.reply({ reply_markup: marketsMenu });
 			ctx.session.sbazarStep = "countMaxAds";
 		}
 	}
