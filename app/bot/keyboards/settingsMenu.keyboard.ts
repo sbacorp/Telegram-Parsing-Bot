@@ -35,24 +35,24 @@ export const settingsMenu = new Menu("mainSettingsMenu")
 		ctx.answerCallbackQuery("⚠️ Неактивная кнопка⚠️");
 	})
 	.row()
-	.text(
-		(ctx: Context) =>
-			ctx.session.onlyWithPhone === true ? "✅ Только с номерами" : "❌ Только с номерами",
-		(ctx: Context) => {
-			ctx.session.onlyWithPhone = !ctx.session.onlyWithPhone;
-			ctx.menu.update();
-		}
-	)
-	.row()
-	.text(
-		(ctx: Context) =>
-			ctx.session.onlyWithWA === true ? "✅ Продавцы с WA" : "❌ Продавцы с WA",
-		(ctx: Context) => {
-			ctx.session.onlyWithWA = !ctx.session.onlyWithWA;
-			ctx.menu.update();
-		}
-	)
-	.row()
+	// .text(
+	// 	(ctx: Context) =>
+	// 		ctx.session.onlyWithPhone === true ? "✅ Только с номерами" : "❌ Только с номерами",
+	// 	(ctx: Context) => {
+	// 		ctx.session.onlyWithPhone = !ctx.session.onlyWithPhone;
+	// 		ctx.menu.update();
+	// 	}
+	// )
+	// .row()
+	// .text(
+	// 	(ctx: Context) =>
+	// 		ctx.session.onlyWithWA === true ? "✅ Продавцы с WA" : "❌ Продавцы с WA",
+	// 	(ctx: Context) => {
+	// 		ctx.session.onlyWithWA = !ctx.session.onlyWithWA;
+	// 		ctx.menu.update();
+	// 	}
+	// )
+	// .row()
 	.submenu("📤Кол-во для выдачи", "countOutputMenu")
 
 	export const countOutputMenu = new Menu("countOutputMenu")
